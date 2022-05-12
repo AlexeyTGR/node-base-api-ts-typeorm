@@ -1,0 +1,6 @@
+node_modules/*
+build
+lock_node_version.js
+src/db/migrations/*
+tsconfig.json
+config

@@ -1,0 +1,10 @@
+{
+  "watch": ["app.ts", "src/", "controllers/", "routes/", "middleware/"],
+  "exec": "npm run serve",
+  "ext": "ts",
+  "verbose": true,
+  "ignore": [
+    "*/**/*.test.ts",
+    "build"
+  ]
+}
