@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert } from 'typeorm';
+import crypto from 'crypto';
+import config from '../../config';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -8,29 +10,36 @@ export enum UserRole {
 @Entity()
 class User {
   @PrimaryGeneratedColumn()
-    id: number;
+  id: number;
 
   @Column({
     type: 'enum',
     enum: UserRole,
     default: UserRole.USER,
   })
-    role: UserRole;
+  role: UserRole;
 
   @Column('text')
-    name: string;
+  name: string;
 
   @Column({
     type: 'text',
     unique: true,
   })
-    email: string;
+  email: string;
 
   @Column('text')
-    password: string;
+  password: string;
 
   @Column('date')
-    dob: Date;
+  dob: Date;
+
+  @BeforeInsert()
+  async hashPassword() {
+    console.log('>>>>>', this.password);
+
+    this.password = await crypto.pbkdf2Sync(this.password, config.salt, 100, 64, 'sha512').toString('hex');
+  }
 }
 
 export default User;

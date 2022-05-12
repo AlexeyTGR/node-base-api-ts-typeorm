@@ -1,3 +1,4 @@
+import verifyPassword from '../middleware/verifyPassword';
 import appDataSource from '../db/data-source';
 import User from '../db/entity/User';
 
@@ -9,6 +10,7 @@ function MyError(code, descripion) {
 
 MyError.prototype = Object.create(Error.prototype);
 MyError.prototype.constructor = MyError;
+const userRepository = appDataSource.getRepository(User);
 
 export const signUp = async (req, res) => {
   try {
@@ -26,27 +28,15 @@ export const signUp = async (req, res) => {
       dob,
     };
 
-    await appDataSource
-      .createQueryBuilder()
-      .insert()
-      .into(User)
-      .values([{
-        email,
-        password,
-        name,
-        dob,
-      }])
-      .execute();
+    const user = userRepository.create(newUser);
 
-    return res.status(200).json(newUser);
+    await userRepository.save(user);
+
+    return res.status(200).json(user);
   } catch (err) {
-    console.log(err);
-
-    // return res.status(err.code).send('Registration error')
     return res.sendStatus(500);
   }
 };
-const userRepository = appDataSource.getRepository(User);
 
 export const signIn = async (req, res) => {
   try {
@@ -57,18 +47,20 @@ export const signIn = async (req, res) => {
 
     const user = await userRepository.findOne({ where: { email } });
 
-    // const user = await appDataSource
-    //   .getRepository(User)
-    //   .createQueryBuilder()
-    //   .where("email = :email", { email })
-    //   .getOne()
-
     if (!user) {
       throw new MyError(404, 'User not found');
     }
-    if (user.password !== password) {
+    const isVerified = verifyPassword(password, user.password);
+    if (!isVerified) {
       throw new MyError(401, 'Wrong password');
     }
+    req.user = {
+      id: user.id,
+      role: user.role,
+      email: user.email,
+      name: user.name,
+      dob: user.dob,
+    };
 
     return res.status(200).send('You are signed in');
   } catch (err) {
