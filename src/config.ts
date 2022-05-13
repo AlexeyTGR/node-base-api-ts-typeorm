@@ -21,6 +21,8 @@ const config = {
     password: parsedEnv.DB_PASSWORD,
     database: parsedEnv.DB_NAME,
   },
+  salt: parsedEnv.SALT,
+  secretKey: parsedEnv.SECRET_KEY,
 };
 
 export default config;

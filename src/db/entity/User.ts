@@ -1,5 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert } from 'typeorm';
 import crypto from 'crypto';
+import { StatusCodes } from 'http-status-codes';
+import createError from '../../utils/createCustomError';
 import config from '../../config';
 
 export enum UserRole {
@@ -36,8 +38,9 @@ class User {
 
   @BeforeInsert()
   async hashPassword() {
-    console.log('>>>>>', this.password);
-
+    if (!this.password) {
+      throw createError(StatusCodes.BAD_REQUEST, 'Password required');
+    }
     this.password = await crypto.pbkdf2Sync(this.password, config.salt, 100, 64, 'sha512').toString('hex');
   }
 }

@@ -1,19 +1,18 @@
+import { StatusCodes } from 'http-status-codes';
 import verifyPassword from '../middleware/verifyPassword';
 import appDataSource from '../db/data-source';
 import User from '../db/entity/User';
+import createError from '../utils/createCustomError';
+import { createToken } from '../utils/token';
 
-function MyError(code, descripion) {
-  this.code = code;
-  this.descripion = descripion;
-  this.stack = (new Error()).stack;
-}
-
-MyError.prototype = Object.create(Error.prototype);
-MyError.prototype.constructor = MyError;
 const userRepository = appDataSource.getRepository(User);
 
 export const signUp = async (req, res) => {
   try {
+    if (!req.body.email && !req.body.password) {
+      throw createError(StatusCodes.NOT_FOUND, 'Not enough data to registration');
+    }
+
     const {
       email,
       password,
@@ -28,13 +27,17 @@ export const signUp = async (req, res) => {
       dob,
     };
 
-    const user = userRepository.create(newUser);
-
+    const user = await userRepository.create(newUser);
     await userRepository.save(user);
+    if (!user) {
+      throw createError(StatusCodes.INTERNAL_SERVER_ERROR);
+    }
 
-    return res.status(200).json(user);
+    const token = createToken(user.id);
+
+    return res.status(200).json({ user, token });
   } catch (err) {
-    return res.sendStatus(500);
+    return res.sendStatus(err.code);
   }
 };
 
@@ -48,12 +51,15 @@ export const signIn = async (req, res) => {
     const user = await userRepository.findOne({ where: { email } });
 
     if (!user) {
-      throw new MyError(404, 'User not found');
+      throw createError(StatusCodes.NOT_FOUND, 'User not found');
     }
     const isVerified = verifyPassword(password, user.password);
     if (!isVerified) {
-      throw new MyError(401, 'Wrong password');
+      throw createError(StatusCodes.FORBIDDEN, 'Wrong password');
     }
+
+    const token = createToken(user.id);
+
     req.user = {
       id: user.id,
       role: user.role,
@@ -62,9 +68,9 @@ export const signIn = async (req, res) => {
       dob: user.dob,
     };
 
-    return res.status(200).send('You are signed in');
+    return res.status(200).send({ message: 'You are signed in', token });
   } catch (err) {
-    return res.status(err.code).send(err.descripion || 'Authorization error');
+    return res.status(err.code).send({ message: err.text });
   }
 };
 
