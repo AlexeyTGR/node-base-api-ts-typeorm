@@ -16,15 +16,17 @@ const promisifiedVerify = async (token: string, key: string): Promise<string> =>
   });
 };
 
-export const createToken = (id: string | number): string => {
-  return jwt.sign(id, config.secretKey);
+const createToken = (id: string | number): string => {
+  return jwt.sign(id, config.tokenSecretKey);
 };
 
-export const verifyToken = async (bearerToken: string): Promise<string> => {
-  const token: string = bearerToken.split(' ')[1];
-  const result: string = await promisifiedVerify(token, config.secretKey);
+const verifyToken = async (token: string): Promise<string> => {
+  const result: string = await promisifiedVerify(token, config.tokenSecretKey);
 
   return result;
 };
 
-export default {};
+export default {
+  verify: verifyToken,
+  create: createToken,
+};

@@ -1,8 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert } from 'typeorm';
-import crypto from 'crypto';
-import { StatusCodes } from 'http-status-codes';
-import createError from '../../utils/createCustomError';
-import config from '../../config';
+import passwordUtils from '../../utils/passwordUtils';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -30,7 +27,9 @@ class User {
   })
   email: string;
 
-  @Column('text')
+  @Column({
+    type: 'text',
+  })
   password: string;
 
   @Column('date')
@@ -38,10 +37,7 @@ class User {
 
   @BeforeInsert()
   async hashPassword() {
-    if (!this.password) {
-      throw createError(StatusCodes.BAD_REQUEST, 'Password required');
-    }
-    this.password = await crypto.pbkdf2Sync(this.password, config.salt, 100, 64, 'sha512').toString('hex');
+    this.password = await passwordUtils.hash(this.password);
   }
 }
 

@@ -14,15 +14,16 @@ const parsedEnv = {
 };
 
 const config = {
-
-  port: +parsedEnv.PORT,
   db: {
+    type: parsedEnv.DB_TYPE as 'postgres',
+    host: parsedEnv.DB_HOST,
+    port: +parsedEnv.DB_PORT,
     username: parsedEnv.DB_USERNAME,
     password: parsedEnv.DB_PASSWORD,
     database: parsedEnv.DB_NAME,
   },
-  salt: parsedEnv.SALT,
-  secretKey: parsedEnv.SECRET_KEY,
+  passwordSecretKey: parsedEnv.SALT,
+  tokenSecretKey: parsedEnv.SECRET_KEY,
 };
 
 export default config;

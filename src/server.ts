@@ -5,6 +5,7 @@ import app from './app';
   await connect();
 
   app.listen(3000, () => {
+    // eslint-disable-next-line no-console
     console.log('Server is waiting for a connection on a port 3000');
   });
 })();

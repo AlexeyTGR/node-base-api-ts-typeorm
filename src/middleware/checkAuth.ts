@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import createError from '../utils/createCustomError';
 import appDataSource from '../db/data-source';
 import User, { UserRole } from '../db/entity/User';
-import { verifyToken } from '../utils/token';
+import tokenUtils from '../utils/tokenUtils';
 
 export interface IRequest extends Request {
   user: {
@@ -20,7 +20,8 @@ const checkAuth = async (req: IRequest, res: Response, next: NextFunction) => {
   try {
     const bearerToken: string = req.headers?.authorization || null;
     if (bearerToken) {
-      const result = await verifyToken(bearerToken);
+      const token: string = bearerToken.split(' ')[1];
+      const result = await tokenUtils.verify(token);
       const user = await userRepository.findOneBy({
         id: +result,
       });
@@ -32,7 +33,7 @@ const checkAuth = async (req: IRequest, res: Response, next: NextFunction) => {
       return next();
     }
   } catch (err) {
-    return res.status(500).send({ message: err.text });
+    next(err);
   }
 };
 

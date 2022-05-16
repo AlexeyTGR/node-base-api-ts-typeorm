@@ -1,7 +1,7 @@
 import express from 'express';
 import { userRouter } from './routes/userRouters';
 import { authRouter } from './routes/authRouters';
-import errorHandler from './middleware/errorHandler';
+import errorHandler from './utils/errorHandler';
 
 const app = express();
 

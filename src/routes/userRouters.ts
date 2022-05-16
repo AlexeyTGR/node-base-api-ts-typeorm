@@ -1,11 +1,15 @@
 import * as express from 'express';
-import * as userController from '../controllers/userController';
 import checkAuth from '../middleware/checkAuth';
+import getAllUsers from '../controllers/userControllers/getAllUsers';
+import getOne from '../controllers/userControllers/getUser';
+import updateUser from '../controllers/userControllers/updateUser';
+import deleteUser from '../controllers/userControllers/deleteUser';
+import { validator, updateUserSchema } from '../middleware/validator';
 
 export const userRouter = express.Router();
 
 userRouter.use(checkAuth);
-userRouter.get('/all', userController.getAll);
-userRouter.get('/:id', userController.getOne);
-userRouter.patch('/:id', userController.updateUser);
-userRouter.delete('/:id', userController.deleteUser);
+userRouter.get('/all', getAllUsers);
+userRouter.get('/:id', getOne);
+userRouter.patch('/:id', validator(updateUserSchema), updateUser);
+userRouter.delete('/:id', deleteUser);
