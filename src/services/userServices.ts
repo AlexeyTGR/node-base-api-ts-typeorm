@@ -5,7 +5,7 @@ import createCustomError from '../utils/createCustomError';
 
 const userRepository = appDataSource.getRepository(User);
 
-const updateUserData = async (id, data) => {
+const updateUserData = async (id: number, data: object): Promise<void> => {
   try {
     await userRepository.update(id, data);
   } catch (err) {

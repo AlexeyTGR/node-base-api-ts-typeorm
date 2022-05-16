@@ -1,13 +1,15 @@
 import { StatusCodes } from 'http-status-codes';
+import { Request, Response } from 'express';
+import { Repository } from 'typeorm';
 import verifyPassword from '../middleware/verifyPassword';
 import appDataSource from '../db/data-source';
 import User from '../db/entity/User';
 import createError from '../utils/createCustomError';
 import { createToken } from '../utils/token';
 
-const userRepository = appDataSource.getRepository(User);
+const userRepository: Repository<User> = appDataSource.getRepository(User);
 
-export const signUp = async (req, res) => {
+export const signUp = async (req: Request, res: Response) => {
   try {
     if (!req.body.email && !req.body.password) {
       throw createError(StatusCodes.NOT_FOUND, 'Not enough data to registration');
@@ -27,7 +29,7 @@ export const signUp = async (req, res) => {
       dob,
     };
 
-    const user = await userRepository.create(newUser);
+    const user = userRepository.create(newUser);
     await userRepository.save(user);
     if (!user) {
       throw createError(StatusCodes.INTERNAL_SERVER_ERROR);

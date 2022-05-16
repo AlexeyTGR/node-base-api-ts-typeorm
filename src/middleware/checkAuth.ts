@@ -5,7 +5,7 @@ import appDataSource from '../db/data-source';
 import User, { UserRole } from '../db/entity/User';
 import { verifyToken } from '../utils/token';
 
-interface IRequest extends Request {
+export interface IRequest extends Request {
   user: {
     id: number;
     email: string;
