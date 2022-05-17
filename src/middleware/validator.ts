@@ -4,15 +4,37 @@ import * as yup from 'yup';
 import { IRequest } from './checkAuth';
 
 export const signUpSchema = yup.object().shape({
-  email: yup.string().email().required(),
-  password: yup.string().required().min(2),
-  name: yup.string().required(),
-  dob: yup.date().required(),
+  body: yup.object().shape({
+    email: yup.string().email(),
+    password: yup.string().min(2),
+    name: yup.string().min(2),
+    dob: yup.date(),
+  }),
 });
 
 export const signInSchema = yup.object().shape({
-  email: yup.string().email().required(),
-  password: yup.string().required().min(2),
+  body: yup.object().shape({
+    email: yup.string().email().required(),
+    password: yup.string().required().min(2),
+  }),
+});
+
+export const getUserSchema = yup.object().shape({
+  params: yup.object().shape({
+    id: yup.number().min(1),
+  }),
+  user: yup.object().shape({
+    id: yup.number().min(1),
+    email: yup.string().email(),
+    name: yup.string().min(2),
+    dob: yup.date(),
+  }),
+});
+
+export const deleteUserSchema = yup.object().shape({
+  params: yup.object().shape({
+    id: yup.number().min(1),
+  }),
 });
 
 export const updateUserSchema = yup.object().shape({
@@ -22,7 +44,13 @@ export const updateUserSchema = yup.object().shape({
   body: yup.object().shape({
     email: yup.string().email(),
     password: yup.string().min(2),
-    name: yup.string(),
+    name: yup.string().min(2),
+    dob: yup.date(),
+  }),
+  user: yup.object().shape({
+    id: yup.number().min(1),
+    email: yup.string().email(),
+    name: yup.string().min(2),
     dob: yup.date(),
   }),
 });
@@ -45,4 +73,6 @@ export default {
   signInSchema,
   signUpSchema,
   updateUserSchema,
+  getUserSchema,
+  deleteUserSchema,
 };
