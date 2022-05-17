@@ -1,25 +1,24 @@
 import { StatusCodes } from 'http-status-codes';
 import { Handler, Request } from 'express';
-import { Repository } from 'typeorm';
-import createError from '../../utils/createCustomError';
 import appDataSource from '../../db/data-source';
 import User from '../../db/entity/User';
-// import { IRequest } from '../../middleware/checkAuth';
-
-const userRepository: Repository<User> = appDataSource.getRepository(User);
+import createCustomError from '../../utils/createCustomError';
 
 type ExtendedRequest = Request<{ id: string }>
 
 export const deleteUser: Handler = async (req: ExtendedRequest, res, next) => {
   try {
-    if (req.user.id !== +req.params.id && req.user.role !== 'admin') {
-      throw createError(StatusCodes.FORBIDDEN, 'you are not allowed to access this data');
+    const userId = +req.params.id;
+    const user = await appDataSource.getRepository(User).findOneBy({
+      id: userId,
+    });
+    if (!user) {
+      throw createCustomError(StatusCodes.NOT_FOUND, `User with id: ${userId} not found`);
     }
-    const userId = req.params.id;
 
-    await userRepository.delete(userId);
+    await appDataSource.getRepository(User).delete(userId);
 
-    return res.status(StatusCodes.NO_CONTENT).json(`User with id = ${userId} deleted`);
+    return res.sendStatus(StatusCodes.NO_CONTENT);
   } catch (err) {
     next(err);
   }

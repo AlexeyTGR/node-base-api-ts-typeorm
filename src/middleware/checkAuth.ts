@@ -1,23 +1,24 @@
 import { StatusCodes } from 'http-status-codes';
 import { Handler } from 'express';
-import createError from '../utils/createCustomError';
+import createCustomError from '../utils/createCustomError';
 import appDataSource from '../db/data-source';
 import User from '../db/entity/User';
 import tokenUtils from '../utils/tokenUtils';
-
-const userRepository = appDataSource.getRepository(User);
 
 const checkAuth: Handler = async (req, res, next) => {
   try {
     const bearerToken: string = req.headers?.authorization || null;
     if (bearerToken) {
-      const token: string = bearerToken.split(' ')[1];
+      const [bearer, token] = bearerToken.split(' ');
+      if (bearer !== 'Bearer') {
+        throw createCustomError(StatusCodes.BAD_REQUEST, 'Token is not valid');
+      }
       const result = await tokenUtils.verify(token);
-      const user = await userRepository.findOneBy({
-        id: +result,
+      const user = await appDataSource.getRepository(User).findOneBy({
+        id: result.id,
       });
       if (!user) {
-        throw createError(StatusCodes.NOT_FOUND, 'User not found');
+        throw createCustomError(StatusCodes.NOT_FOUND, 'User not found');
       }
       req.user = user;
 

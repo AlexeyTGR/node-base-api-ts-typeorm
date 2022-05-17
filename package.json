@@ -5,8 +5,6 @@
     "compile": "tsc -p tsconfig.json",
     "build": "npm run clean && npm run compile",
     "serve": "ts-node ./src/server.ts",
-    "typeorm": "typeorm-ts-node-esm -d ./src/data-source.ts",
-    "typeorm:cli": "ts-node ./node_modules/typeorm/cli -f ./src/db/data-source.ts",
     "db:sync": "ts-node node_modules/typeorm/cli.js migration:generate -p ./src/db/migrations/sync --dataSource ./db/src/data-source.ts",
     "db:migrate:up": "ts-node node_modules/typeorm/cli.js migration:run --dataSource ./src/db/data-source.ts",
     "db:migrate:down": "ts-node node_modules/typeorm/cli.js migration:revert --dataSource ./src/db/data-source.ts",
@@ -31,6 +29,7 @@
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.13",
+    "@types/jsonwebtoken": "^8.5.8",
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "eslint": "^8.15.0",
     "eslint-config-airbnb-base": "^15.0.0",

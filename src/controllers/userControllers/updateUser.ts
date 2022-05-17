@@ -1,40 +1,45 @@
 import { StatusCodes } from 'http-status-codes';
 import { Handler, Request } from 'express';
-import createError from '../../utils/createCustomError';
+import createCustomError from '../../utils/createCustomError';
 import updateUserData from '../../services/userServices';
 import passwordUtils from '../../utils/passwordUtils';
+import appDataSource from '../../db/data-source';
+import User from '../../db/entity/User';
 
-type ExtendedRequest = Request<
-{ id: string; },
-unknown,
-{
+type BodyType = {
   role?: string;
   email?: string;
   name?: string;
   password?: string;
 }
->
+type ExtendedRequest = Request<{ id: string; }, unknown, BodyType>
 
 export const updateUser: Handler = async (req: ExtendedRequest, res, next) => {
   try {
-    if (+req.user.id !== +req.params.id) {
-      if (req.user.role !== 'admin') {
-        throw createError(StatusCodes.FORBIDDEN, 'you are not allowed to access this data');
-      }
+    const userId: number = +req.params.id;
+    const user = await appDataSource.getRepository(User).findOneBy({
+      id: userId,
+    });
+    if (!user) {
+      throw createCustomError(StatusCodes.NOT_FOUND, `User with id: ${userId} not found`);
     }
 
-    const userId: number = +req.params.id;
+    const dataToChange = req.body;
     if (req.body.password) {
       const hashedPassword = passwordUtils.hash(req.body.password);
-      req.body.password = hashedPassword;
+      dataToChange.password = hashedPassword;
     }
     if (req.body.role && req.user.role !== 'admin') {
-      throw createError(StatusCodes.FORBIDDEN, 'Only admin can change the role');
+      throw createCustomError(StatusCodes.FORBIDDEN, 'Only admin can change the role');
     }
 
-    await updateUserData(userId, req.body);
+    await updateUserData(userId, dataToChange);
 
-    return res.status(StatusCodes.OK).send('Done!');
+    const updatedUser = await appDataSource.getRepository(User).findOneBy({
+      id: userId,
+    });
+
+    return res.status(StatusCodes.OK).json({ data: { message: 'Done!', updatedUser } });
   } catch (err) {
     next(err);
   }

@@ -22,6 +22,7 @@ const config = {
     password: parsedEnv.DB_PASSWORD,
     database: parsedEnv.DB_NAME,
   },
+  port: parsedEnv.CONNECTION_PORT,
   passwordSecretKey: parsedEnv.SALT,
   tokenSecretKey: parsedEnv.SECRET_KEY,
 };

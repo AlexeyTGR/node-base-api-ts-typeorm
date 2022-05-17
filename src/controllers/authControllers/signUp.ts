@@ -1,55 +1,26 @@
 import { StatusCodes } from 'http-status-codes';
 import { Handler, Request } from 'express';
-import { Repository } from 'typeorm';
 import appDataSource from '../../db/data-source';
 import User from '../../db/entity/User';
-import createCustomError from '../../utils/createCustomError';
 import tokenUtils from '../../utils/tokenUtils';
 
-const userRepository: Repository<User> = appDataSource.getRepository(User);
-
-type ExtendedRequest = Request<
-unknown,
-unknown,
-{
+type ReqBody = {
   email: string;
   password: string;
   name: string;
   dob: string;
 }
->
+type ExtendedRequest = Request<unknown, unknown, ReqBody>
 
 export const signUp: Handler = async (req: ExtendedRequest, res, next) => {
   try {
-    if (!req.body.email && !req.body.password) {
-      throw createCustomError(StatusCodes.NOT_FOUND, 'Not enough data to registration');
-    }
+    const userData = appDataSource.getRepository(User).create(req.body);
+    const user = await appDataSource.getRepository(User).save(userData);
 
-    const {
-      email,
-      password,
-      name,
-      dob,
-    } = req.body;
-
-    const newUser = {
-      email,
-      password,
-      name,
-      dob,
-    };
-
-    const user = userRepository.create(newUser);
-    await userRepository.save(user);
-    if (!user) {
-      throw createCustomError(StatusCodes.INTERNAL_SERVER_ERROR);
-    }
     delete user.password;
-    delete user.role;
+    const token = tokenUtils.create(user.id);
 
-    const token: string = tokenUtils.create(user.id);
-
-    return res.status(StatusCodes.CREATED).json({ user, token });
+    return res.status(StatusCodes.CREATED).json({ data: { message: 'User created!', user, token } });
   } catch (err) {
     next(err);
   }

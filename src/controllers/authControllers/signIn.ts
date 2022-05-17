@@ -1,22 +1,12 @@
 import { StatusCodes } from 'http-status-codes';
 import { Handler, Request } from 'express';
-import { Repository } from 'typeorm';
 import passwordUtils from '../../utils/passwordUtils';
 import appDataSource from '../../db/data-source';
 import User from '../../db/entity/User';
 import createCustomError from '../../utils/createCustomError';
 import tokenUtils from '../../utils/tokenUtils';
 
-const userRepository: Repository<User> = appDataSource.getRepository(User);
-
-type ExtendedRequest = Request<
-unknown,
-unknown,
-{
-  email: string;
-  password: string;
-}
->
+type ExtendedRequest = Request<unknown, unknown, { email: string; password: string; }>
 
 export const signIn: Handler = async (req: ExtendedRequest, res, next) => {
   try {
@@ -25,10 +15,11 @@ export const signIn: Handler = async (req: ExtendedRequest, res, next) => {
       password,
     } = req.body;
 
-    const user = await userRepository.findOne({
-      where: { email },
-      select: ['id', 'password'],
-    });
+    const user = await appDataSource.getRepository(User)
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.email = :email', { email })
+      .getOne();
 
     if (!user) {
       throw createCustomError(StatusCodes.NOT_FOUND, 'User not found');
@@ -40,16 +31,9 @@ export const signIn: Handler = async (req: ExtendedRequest, res, next) => {
     }
 
     const token = tokenUtils.create(user.id);
+    delete user.password;
 
-    req.user = {
-      id: user.id,
-      role: user.role,
-      email: user.email,
-      name: user.name,
-      dob: user.dob,
-    };
-
-    return res.status(StatusCodes.OK).json({ message: 'You are signed in', token });
+    return res.status(StatusCodes.OK).json({ data: { message: 'You are signed in', user, token } });
   } catch (err) {
     next(err);
   }

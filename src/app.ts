@@ -1,4 +1,5 @@
 import express from 'express';
+import { StatusCodes } from 'http-status-codes';
 import { userRouter } from './routes/userRouters';
 import { authRouter } from './routes/authRouters';
 import errorHandler from './middleware/errorHandler';
@@ -13,7 +14,7 @@ app.use('/user', userRouter);
 app.use('/auth', authRouter);
 
 app.use((req, res) => {
-  res.status(404).send('Not Found');
+  res.status(StatusCodes.NOT_FOUND).json('Not Found');
 });
 
 app.use(errorHandler);

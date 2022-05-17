@@ -1,7 +1,9 @@
 import jwt from 'jsonwebtoken';
 import config from '../config';
 
-const promisifiedVerify = async (token: string, key: string): Promise<string> => {
+type TokenPayload = {id:number}
+
+const promisifiedVerify = async (token: string, key: string): Promise<TokenPayload> => {
   return new Promise((resolve, reject) => {
     jwt.verify(
       token,
@@ -10,18 +12,18 @@ const promisifiedVerify = async (token: string, key: string): Promise<string> =>
         if (err) {
           return reject(err);
         }
-        return resolve(decoded);
+        return resolve(decoded as TokenPayload);
       },
     );
   });
 };
 
-const createToken = (id: string | number): string => {
-  return jwt.sign(id, config.tokenSecretKey);
+const createToken = (id: number): string => {
+  return jwt.sign({ id }, config.tokenSecretKey);
 };
 
-const verifyToken = async (token: string): Promise<string> => {
-  const result: string = await promisifiedVerify(token, config.tokenSecretKey);
+const verifyToken = async (token: string): Promise<TokenPayload> => {
+  const result = await promisifiedVerify(token, config.tokenSecretKey);
 
   return result;
 };
