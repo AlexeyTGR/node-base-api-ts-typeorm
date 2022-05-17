@@ -17,11 +17,15 @@ export const signIn = async (req: IRequest, res: Response, next: NextFunction) =
       password,
     } = req.body;
 
-    const user = await userRepository.findOne({ where: { email } });
+    const user = await userRepository.findOne({
+      where: { email },
+      select: ['id', 'password'],
+    });
 
     if (!user) {
       throw createCustomError(StatusCodes.NOT_FOUND, 'User not found');
     }
+
     const isVerified = passwordUtils.verify(password, user.password);
     if (!isVerified) {
       throw createCustomError(StatusCodes.FORBIDDEN, 'Wrong password');

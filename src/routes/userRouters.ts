@@ -4,7 +4,8 @@ import getAllUsers from '../controllers/userControllers/getAllUsers';
 import getOne from '../controllers/userControllers/getUser';
 import updateUser from '../controllers/userControllers/updateUser';
 import deleteUser from '../controllers/userControllers/deleteUser';
-import { validator, updateUserSchema, getUserSchema, deleteUserSchema } from '../middleware/validator';
+import validator from '../middleware/validator/validator';
+import { updateUserSchema, getUserSchema, deleteUserSchema } from '../middleware/validator/userValidatorSchemas';
 
 export const userRouter = express.Router();
 
