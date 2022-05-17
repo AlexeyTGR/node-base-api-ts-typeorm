@@ -1,25 +1,25 @@
 import { StatusCodes } from 'http-status-codes';
-import { NextFunction, Response } from 'express';
+import { Handler, Request } from 'express';
 import { Repository } from 'typeorm';
 import createError from '../../utils/createCustomError';
 import appDataSource from '../../db/data-source';
 import User from '../../db/entity/User';
-import { IRequest } from '../../middleware/checkAuth';
+// import { IRequest } from '../../middleware/checkAuth';
 
 const userRepository: Repository<User> = appDataSource.getRepository(User);
 
-export const deleteUser = async (req: IRequest, res: Response, next: NextFunction) => {
+type ExtendedRequest = Request<{ id: string }>
+
+export const deleteUser: Handler = async (req: ExtendedRequest, res, next) => {
   try {
-    if (+req.user.id !== +req.params.id) {
-      if (req.user.role !== 'admin') {
-        throw createError(StatusCodes.FORBIDDEN, 'you are not allowed to access this data');
-      }
+    if (req.user.id !== +req.params.id && req.user.role !== 'admin') {
+      throw createError(StatusCodes.FORBIDDEN, 'you are not allowed to access this data');
     }
     const userId = req.params.id;
 
     await userRepository.delete(userId);
 
-    return res.status(200).send(`User with id = ${userId} deleted`);
+    return res.status(StatusCodes.NO_CONTENT).json(`User with id = ${userId} deleted`);
   } catch (err) {
     next(err);
   }

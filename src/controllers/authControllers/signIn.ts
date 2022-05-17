@@ -1,7 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
-import { NextFunction, Response } from 'express';
+import { Handler, Request } from 'express';
 import { Repository } from 'typeorm';
-import { IRequest } from '../../middleware/checkAuth';
 import passwordUtils from '../../utils/passwordUtils';
 import appDataSource from '../../db/data-source';
 import User from '../../db/entity/User';
@@ -10,7 +9,16 @@ import tokenUtils from '../../utils/tokenUtils';
 
 const userRepository: Repository<User> = appDataSource.getRepository(User);
 
-export const signIn = async (req: IRequest, res: Response, next: NextFunction) => {
+type ExtendedRequest = Request<
+unknown,
+unknown,
+{
+  email: string;
+  password: string;
+}
+>
+
+export const signIn: Handler = async (req: ExtendedRequest, res, next) => {
   try {
     const {
       email,
@@ -41,7 +49,7 @@ export const signIn = async (req: IRequest, res: Response, next: NextFunction) =
       dob: user.dob,
     };
 
-    return res.status(200).send({ message: 'You are signed in', token });
+    return res.status(StatusCodes.OK).json({ message: 'You are signed in', token });
   } catch (err) {
     next(err);
   }

@@ -1,15 +1,29 @@
 import { StatusCodes } from 'http-status-codes';
-import { NextFunction, Response } from 'express';
+import { Handler, Request } from 'express';
 import { Repository } from 'typeorm';
 import dayjs from 'dayjs';
 import createError from '../../utils/createCustomError';
 import appDataSource from '../../db/data-source';
 import User from '../../db/entity/User';
-import { IRequest } from '../../middleware/checkAuth';
 
 const userRepository: Repository<User> = appDataSource.getRepository(User);
 
-export const getAllUsers = async (req: IRequest, res: Response, next: NextFunction) => {
+type ExtendedRequest = Request<
+unknown,
+unknown,
+unknown,
+{
+  page?: string;
+  take?: string;
+  order?: string;
+  orderDirection?: string;
+  find?: string;
+  date?: string;
+  dateTo?: string;
+}
+>
+
+export const getAllUsers: Handler = async (req: ExtendedRequest, res, next) => {
   try {
     const page: number = +req.query.page || 1;
     const take: number = +req.query.take || 100;
@@ -55,7 +69,7 @@ export const getAllUsers = async (req: IRequest, res: Response, next: NextFuncti
       createError(StatusCodes.NOT_FOUND, 'Users not found');
     }
 
-    return res.status(200).send(users);
+    return res.status(StatusCodes.OK).send(users);
   } catch (err) {
     next(err);
   }

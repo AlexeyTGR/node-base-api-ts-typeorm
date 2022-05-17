@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import { NextFunction, Request, Response } from 'express';
+import { Handler, Request } from 'express';
 import { Repository } from 'typeorm';
 import appDataSource from '../../db/data-source';
 import User from '../../db/entity/User';
@@ -8,7 +8,18 @@ import tokenUtils from '../../utils/tokenUtils';
 
 const userRepository: Repository<User> = appDataSource.getRepository(User);
 
-export const signUp = async (req: Request, res: Response, next: NextFunction) => {
+type ExtendedRequest = Request<
+unknown,
+unknown,
+{
+  email: string;
+  password: string;
+  name: string;
+  dob: string;
+}
+>
+
+export const signUp: Handler = async (req: ExtendedRequest, res, next) => {
   try {
     if (!req.body.email && !req.body.password) {
       throw createCustomError(StatusCodes.NOT_FOUND, 'Not enough data to registration');
@@ -33,10 +44,12 @@ export const signUp = async (req: Request, res: Response, next: NextFunction) =>
     if (!user) {
       throw createCustomError(StatusCodes.INTERNAL_SERVER_ERROR);
     }
+    delete user.password;
+    delete user.role;
 
-    const token:string = tokenUtils.create(user.id);
+    const token: string = tokenUtils.create(user.id);
 
-    return res.status(200).json({ user, token });
+    return res.status(StatusCodes.CREATED).json({ user, token });
   } catch (err) {
     next(err);
   }

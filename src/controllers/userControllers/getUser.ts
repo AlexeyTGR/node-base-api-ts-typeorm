@@ -1,9 +1,12 @@
 import { StatusCodes } from 'http-status-codes';
-import { NextFunction, Response } from 'express';
+import { Handler, Request } from 'express';
 import createError from '../../utils/createCustomError';
-import { IRequest } from '../../middleware/checkAuth';
 
-export const getOne = async (req: IRequest, res: Response, next: NextFunction) => {
+type ExtendedRequest = Request<
+{ id: string; }
+>
+
+export const getOne: Handler = async (req: ExtendedRequest, res, next) => {
   try {
     if (+req.user.id !== +req.params.id) {
       if (req.user.role !== 'admin') {
@@ -12,7 +15,7 @@ export const getOne = async (req: IRequest, res: Response, next: NextFunction) =
     }
     const user = req.user;
 
-    return res.status(200).json({ message: 'Hello man', user });
+    return res.status(StatusCodes.OK).json({ message: 'Hello man', user });
   } catch (err) {
     next(err);
   }

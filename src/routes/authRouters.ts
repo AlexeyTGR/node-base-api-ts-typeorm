@@ -1,10 +1,10 @@
 import * as express from 'express';
 import signUp from '../controllers/authControllers/signUp';
 import signIn from '../controllers/authControllers/signIn';
-import validator from '../middleware/validator/validator';
-import { signUpSchema, signInSchema } from '../middleware/validator/authValidatorSchemas';
+import createValidatorMiddleware from '../utils/validator/validator';
+import validator from '../utils/validator/authValidatorSchemas';
 
 export const authRouter = express.Router();
 
-authRouter.post('/signup', validator(signUpSchema), signUp);
-authRouter.post('/signin', validator(signInSchema), signIn);
+authRouter.post('/signup', createValidatorMiddleware(validator.signUp), signUp);
+authRouter.post('/signin', createValidatorMiddleware(validator.signIn), signIn);

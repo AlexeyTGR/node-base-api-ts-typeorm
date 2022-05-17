@@ -1,22 +1,13 @@
 import { StatusCodes } from 'http-status-codes';
-import { Request, Response, NextFunction } from 'express';
+import { Handler } from 'express';
 import createError from '../utils/createCustomError';
 import appDataSource from '../db/data-source';
-import User, { UserRole } from '../db/entity/User';
+import User from '../db/entity/User';
 import tokenUtils from '../utils/tokenUtils';
 
-export interface IRequest extends Request {
-  user: {
-    id: number;
-    email: string;
-    name: string;
-    dob: Date;
-    role: UserRole
-  },
-}
 const userRepository = appDataSource.getRepository(User);
 
-const checkAuth = async (req: IRequest, res: Response, next: NextFunction) => {
+const checkAuth: Handler = async (req, res, next) => {
   try {
     const bearerToken: string = req.headers?.authorization || null;
     if (bearerToken) {
