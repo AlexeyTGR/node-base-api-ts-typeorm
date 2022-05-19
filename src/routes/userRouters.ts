@@ -14,7 +14,7 @@ export const userRouter = express.Router();
 
 userRouter.use(checkAuth);
 userRouter.get('/all', createValidatorMiddleware(validator.getAllUsers), checkIsAdmin, getAllUsers);
-userRouter.get('/profile/:id', createValidatorMiddleware(validator.getUser), checkAccessRight, getProfile);
+userRouter.get('/me', getProfile);
 userRouter.get('/:id', createValidatorMiddleware(validator.getUser), checkIsAdmin, getUser);
 userRouter.patch('/:id', createValidatorMiddleware(validator.updateUser), checkAccessRight, updateUser);
 userRouter.delete('/:id', createValidatorMiddleware(validator.deleteUser), checkAccessRight, deleteUser);

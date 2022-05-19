@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
+
 import config from '../config';
 
-type TokenPayload = {id:number}
+type TokenPayload = { id: number }
 
 const promisifiedVerify = async (token: string, key: string): Promise<TokenPayload> => {
   return new Promise((resolve, reject) => {

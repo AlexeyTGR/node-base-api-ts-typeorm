@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import { Handler, Request } from 'express';
 import dayjs from 'dayjs';
-import userRepository from '../../services/getRepository';
+import db from '../../db';
 import constants from '../../utils/constants';
 
 type ReqQuery = {
@@ -10,7 +10,7 @@ type ReqQuery = {
   order?: string;
   orderDirection?: 'ASC' | 'DESC';
   find?: string;
-  date?: string;
+  dateFrom?: string;
   dateTo?: string;
 }
 type ExtendedRequest = Request<unknown, unknown, unknown, ReqQuery>
@@ -23,17 +23,15 @@ export const getAllUsers: Handler = async (req: ExtendedRequest, res, next) => {
     const order = req.query.order || constants.COMMON_ORDER_NAME;
     const orderDirection = req.query.orderDirection || constants.COMMON_ORDER_DIRECTION;
     const valueToFind = req.query.find || null;
-    const filterDateFrom = req.query.date || null;
+    const filterDateFrom = req.query.dateFrom || null;
     const filterDateTo = req.query.dateTo || null;
 
-    let query = userRepository.createQueryBuilder('user');
+    let query = db.user.createQueryBuilder('user');
     query = query.orderBy(order, orderDirection);
 
-    if (filterDateFrom) {
-      const startOfDay: dayjs.Dayjs = dayjs(filterDateFrom).startOf('day');
-      const endOfDay: dayjs.Dayjs = (filterDateTo)
-        ? dayjs(filterDateTo).endOf('day')
-        : startOfDay.clone().endOf('day');
+    if (filterDateFrom && filterDateTo) {
+      const startOfDay = dayjs(filterDateFrom).startOf('day');
+      const endOfDay = dayjs(filterDateTo).endOf('day');
 
       query = query.andWhere('user.dob BETWEEN :startDate AND :endDate', { startDate: startOfDay.toDate(), endDate: endOfDay.toDate() });
     }

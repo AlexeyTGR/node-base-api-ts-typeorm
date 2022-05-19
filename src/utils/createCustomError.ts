@@ -1,4 +1,5 @@
 import StatusCodes from 'http-status-codes';
+
 import constants from '../utils/constants';
 
 export interface ExtendedError extends Error {
@@ -10,8 +11,12 @@ export interface ExtendedError extends Error {
 
 const createCustomError = (code: number, text = constants.COMMON_ERROR_MESSAGE): ExtendedError => {
   const error: ExtendedError = new Error(text);
-  error.customErrorData.text = text;
-  error.customErrorData.code = code || StatusCodes.BAD_REQUEST;
+
+  error.customErrorData = {
+    text,
+    code: code || StatusCodes.BAD_REQUEST,
+  };
+
   return error;
 };
 

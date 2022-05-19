@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import { Handler, Request } from 'express';
 import tokenUtils from '../../utils/tokenUtils';
-import userRepository from '../../services/getRepository';
+import db from '../../db';
 
 type ReqBody = {
   email: string;
@@ -13,8 +13,8 @@ type ExtendedRequest = Request<unknown, unknown, ReqBody>
 
 export const signUp: Handler = async (req: ExtendedRequest, res, next) => {
   try {
-    const userData = userRepository.create(req.body);
-    const user = await userRepository.save(userData);
+    const userData = db.user.create(req.body);
+    const user = await db.user.save(userData);
 
     delete user.password;
     const token = tokenUtils.create(user.id);
