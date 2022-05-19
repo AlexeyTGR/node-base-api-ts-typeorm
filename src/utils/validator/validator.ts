@@ -20,6 +20,7 @@ export const createValidatorMiddleware = (shape) => {
           message: e.message,
         });
       });
+
       res.status(StatusCodes.BAD_REQUEST).json(messages);
     }
   };
