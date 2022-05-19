@@ -1,13 +1,17 @@
 import StatusCodes from 'http-status-codes';
 
 export interface ExtendedError extends Error {
-  code?: number;
+  customErrorData?: {
+    code?: number;
+    text?: string;
+  },
   status?: number;
 }
 
-const createCustomError = (code: number, message = 'Sorry, something went wrong...'): ExtendedError => {
-  const error: ExtendedError = new Error(message);
-  error.code = code || StatusCodes.BAD_REQUEST;
+const createCustomError = (code: number, text = 'Sorry, something went wrong...'): ExtendedError => {
+  const error: ExtendedError = new Error(text);
+  error.customErrorData.text = text;
+  error.customErrorData.code = code || StatusCodes.BAD_REQUEST;
   return error;
 };
 

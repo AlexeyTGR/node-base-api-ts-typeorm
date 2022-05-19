@@ -4,8 +4,8 @@ import { ExtendedError } from '../utils/createCustomError';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const errorHandler = (err: ExtendedError, req: Request, res: Response, next: NextFunction) => {
-  let message = err.message;
-  let code = err.code || err.status;
+  let message = err.customErrorData.text || 'Something went wrong...';
+  let code = err.customErrorData.code || err.status;
   const isStatusCodeValid = Object.values(StatusCodes).includes(code);
   if (!isStatusCodeValid) {
     code = 500;

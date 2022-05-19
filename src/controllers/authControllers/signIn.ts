@@ -1,10 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
 import { Handler, Request } from 'express';
 import passwordUtils from '../../utils/passwordUtils';
-import appDataSource from '../../db/data-source';
-import User from '../../db/entity/User';
 import createCustomError from '../../utils/createCustomError';
 import tokenUtils from '../../utils/tokenUtils';
+import userRepository from '../../services/getRepository';
 
 type ExtendedRequest = Request<unknown, unknown, { email: string; password: string; }>
 
@@ -15,7 +14,7 @@ export const signIn: Handler = async (req: ExtendedRequest, res, next) => {
       password,
     } = req.body;
 
-    const user = await appDataSource.getRepository(User)
+    const user = await userRepository
       .createQueryBuilder('user')
       .addSelect('user.password')
       .where('user.email = :email', { email })

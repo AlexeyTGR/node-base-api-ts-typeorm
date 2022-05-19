@@ -1,9 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
 import { Handler } from 'express';
 import createCustomError from '../utils/createCustomError';
-import appDataSource from '../db/data-source';
-import User from '../db/entity/User';
 import tokenUtils from '../utils/tokenUtils';
+import userRepository from '../services/getRepository';
 
 const checkAuth: Handler = async (req, res, next) => {
   try {
@@ -14,7 +13,7 @@ const checkAuth: Handler = async (req, res, next) => {
         throw createCustomError(StatusCodes.BAD_REQUEST, 'Token is not valid');
       }
       const result = await tokenUtils.verify(token);
-      const user = await appDataSource.getRepository(User).findOneBy({
+      const user = await userRepository.findOneBy({
         id: result.id,
       });
       if (!user) {

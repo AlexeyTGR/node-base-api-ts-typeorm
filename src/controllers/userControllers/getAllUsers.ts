@@ -1,8 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import { Handler, Request } from 'express';
 import dayjs from 'dayjs';
-import appDataSource from '../../db/data-source';
-import User from '../../db/entity/User';
+import userRepository from '../../services/getRepository';
 
 type ReqQuery = {
   page?: string;
@@ -26,7 +25,7 @@ export const getAllUsers: Handler = async (req: ExtendedRequest, res, next) => {
     const filterDateFrom = req.query.date || null;
     const filterDateTo = req.query.dateTo || null;
 
-    let query = appDataSource.getRepository(User).createQueryBuilder('user');
+    let query = userRepository.createQueryBuilder('user');
     query = query.orderBy(order, orderDirection);
 
     if (filterDateFrom) {

@@ -3,8 +3,7 @@ import { Handler, Request } from 'express';
 import createCustomError from '../../utils/createCustomError';
 import updateUserData from '../../services/userServices';
 import passwordUtils from '../../utils/passwordUtils';
-import appDataSource from '../../db/data-source';
-import User from '../../db/entity/User';
+import userRepository from '../../services/getRepository';
 
 type BodyType = {
   role?: string;
@@ -17,7 +16,7 @@ type ExtendedRequest = Request<{ id: string; }, unknown, BodyType>
 export const updateUser: Handler = async (req: ExtendedRequest, res, next) => {
   try {
     const userId: number = +req.params.id;
-    const user = await appDataSource.getRepository(User).findOneBy({
+    const user = await userRepository.findOneBy({
       id: userId,
     });
     if (!user) {
@@ -35,7 +34,7 @@ export const updateUser: Handler = async (req: ExtendedRequest, res, next) => {
 
     await updateUserData(userId, dataToChange);
 
-    const updatedUser = await appDataSource.getRepository(User).findOneBy({
+    const updatedUser = await userRepository.findOneBy({
       id: userId,
     });
 

@@ -11,18 +11,16 @@ export const createValidatorMiddleware = (shape) => {
 
       next();
     } catch (err) {
-      let answer;
-      const errorQuantity = Object.keys(err.inner).length;
-      if (errorQuantity > 1) {
-        const message = [];
-        for (let i = 0; i < errorQuantity; i++) {
-          message.push(err.inner[i].message);
-        }
-        answer = `${err.message}: ${message.join(' and ')}`;
-      }
-      err.message = answer || err.message;
-      err.code = StatusCodes.BAD_REQUEST;
-      next(err);
+      const messages = [];
+      err.inner.forEach((e) => {
+        messages.push({
+          path: e.path.split('.')[0] || e.path,
+          field: e.path.split('.')[1] || 'general',
+          name: e.name,
+          message: e.message,
+        });
+      });
+      res.status(StatusCodes.BAD_REQUEST).json(messages);
     }
   };
 };

@@ -21,6 +21,7 @@ export const updateUser = yup.object().shape({
     password: yup.string().min(2),
     name: yup.string().min(2),
     dob: yup.string(),
+    role: yup.string(),
   }).noUnknown(true, 'Bad request'),
 });
 
