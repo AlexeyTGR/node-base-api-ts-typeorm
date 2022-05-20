@@ -34,7 +34,7 @@ export const signIn: Handler = async (req: ExtendedRequest, res, next) => {
     const token = tokenUtils.create(user.id);
     delete user.password;
 
-    return res.status(StatusCodes.OK).json({ data: { user, token }, message: 'You are signed in' });
+    return res.status(StatusCodes.OK).json({ user, token, message: 'You are signed in' });
   } catch (err) {
     next(err);
   }

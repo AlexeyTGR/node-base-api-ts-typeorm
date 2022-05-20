@@ -18,7 +18,10 @@ class User {
   })
   role: UserRole;
 
-  @Column('text')
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
   name: string;
 
   @Column({
@@ -33,7 +36,10 @@ class User {
   })
   password: string;
 
-  @Column('date')
+  @Column({
+    type: 'date',
+    nullable: true,
+  })
   dob: Date;
 
   @BeforeInsert()
