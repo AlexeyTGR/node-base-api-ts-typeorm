@@ -18,14 +18,18 @@ type ExtendedRequest = Request<{ id: string; }, unknown, BodyType>
 export const updateUser: Handler = async (req: ExtendedRequest, res, next) => {
   try {
     const userId: number = +req.params.id;
-    const user = await db.user.findOneBy({
-      id: userId,
-    });
+    const user = await db.user
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.id = :id', { id: userId })
+      .getOne();
+
     if (!user) {
       throw createCustomError(StatusCodes.NOT_FOUND, `User with id: ${userId} not found`);
     }
 
     const dataToChange = req.body;
+
     if (req.body.password) {
       dataToChange.oldPassword = passwordUtils.hash(req.body.oldPassword);
 
@@ -34,6 +38,7 @@ export const updateUser: Handler = async (req: ExtendedRequest, res, next) => {
       }
 
       dataToChange.password = passwordUtils.hash(req.body.password);
+      delete dataToChange.oldPassword;
     }
     if (req.body.role && req.user.role !== 'admin') {
       throw createCustomError(StatusCodes.FORBIDDEN, 'Only admin can change the role');
