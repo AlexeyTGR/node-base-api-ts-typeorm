@@ -20,6 +20,7 @@ export const updateUser = yup.object().shape({
   body: yup.object().shape({
     email: yup.string().trim().email(),
     password: yup.string().trim().min(2),
+    oldPassword: yup.string().trim(),
     name: yup.string().trim().min(2),
     dob: yup.string(),
     role: yup.string(),
