@@ -42,6 +42,12 @@ class User {
   })
   dob: Date;
 
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
+  avatar: string;
+
   @BeforeInsert()
   async hashPassword() {
     this.password = await passwordUtils.hash(this.password);
