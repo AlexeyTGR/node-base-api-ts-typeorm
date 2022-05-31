@@ -10,9 +10,9 @@ import type from './type'; // eslint-disable-line @typescript-eslint/no-unused-v
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(cors({ origin: ['http://localhost:3000'] }));
-app.use(express.static(`${__dirname}/public`));
+app.use(express.static('public'));
 
 app.use('/user', userRouter);
 app.use('/auth', authRouter);

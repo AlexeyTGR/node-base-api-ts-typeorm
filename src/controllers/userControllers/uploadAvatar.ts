@@ -12,6 +12,7 @@ export const uploadAvatar: Handler = async (req, res, next) => {
     });
 
     const [imgInfo, base64Data] = req.body.img.split(',');
+    const [test] = req.body.img.match(/(?<=\/)\w+(?=;)/i); // what's better?
     const imgFormat = imgInfo.split('/')[1].split(';')[0];
     const avatarName = `${Date.now()}.${imgFormat}`;
 
