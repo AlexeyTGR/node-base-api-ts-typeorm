@@ -40,9 +40,18 @@ export const getAllUsers = yup.object().shape({
   }).noUnknown(true, 'Bad request'),
 });
 
+export const uploadAvatar = yup.object().shape({
+  body: yup.object().shape({
+    img: yup.string().matches(/data:image/, 'File should be an image!').matches(/base64/)
+      .matches(/jpeg|jpg|png/, 'Wrong filename extension')
+      .required(),
+  }),
+});
+
 export default {
   updateUser,
   getUser,
   deleteUser,
   getAllUsers,
+  uploadAvatar,
 };

@@ -19,4 +19,4 @@ userRouter.get('/me', getProfile);
 userRouter.get('/:id', createValidatorMiddleware(validator.getUser), checkIsAdmin, getUser);
 userRouter.patch('/:id', createValidatorMiddleware(validator.updateUser), checkAccessRight, updateUser);
 userRouter.delete('/:id', createValidatorMiddleware(validator.deleteUser), checkAccessRight, deleteUser);
-userRouter.post('/upload-avatar', uploadAvatar);
+userRouter.post('/upload-avatar', createValidatorMiddleware(validator.uploadAvatar), uploadAvatar);

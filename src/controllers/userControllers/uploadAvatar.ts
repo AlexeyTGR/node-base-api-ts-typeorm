@@ -12,9 +12,8 @@ export const uploadAvatar: Handler = async (req, res, next) => {
       id: userId,
     });
     const [imgInfo, base64Data] = req.body.img.split(',');
-    const [test] = req.body.img.match(/(?<=\/)\w+(?=;)/i); // what's better?
-    const imgFormat = imgInfo.split('/')[1].split(';')[0];
-    const avatarName = `${uuidv4()}.${imgFormat}`;
+    const imgExtention = imgInfo.replace(/(^"data:image\/)|(;base64$)/g, '');
+    const avatarName = `${uuidv4()}.${imgExtention}`;
 
     fs.writeFile(`public/${avatarName}`, base64Data, 'base64', (err) => {
       if (err) {
