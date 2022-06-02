@@ -3,7 +3,6 @@ import { StatusCodes } from 'http-status-codes';
 import { Handler } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import db from '../../db';
-import createCustomError from '../../utils/createCustomError';
 
 export const uploadAvatar: Handler = async (req, res, next) => {
   try {
@@ -15,11 +14,7 @@ export const uploadAvatar: Handler = async (req, res, next) => {
     const imgExtention = imgInfo.replace(/(^"data:image\/)|(;base64$)/g, '');
     const avatarName = `${uuidv4()}.${imgExtention}`;
 
-    fs.writeFile(`public/${avatarName}`, base64Data, 'base64', (err) => {
-      if (err) {
-        throw createCustomError(StatusCodes.BAD_REQUEST, 'Something went wrong with uploading your avatar...');
-      }
-    });
+    await fs.promises.writeFile(`public/${avatarName}`, base64Data, 'base64');
 
     user.avatar = avatarName;
     await db.user.update(userId, user);

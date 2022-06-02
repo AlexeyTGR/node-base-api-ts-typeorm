@@ -1,37 +1,53 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
+import * as typeorm from 'typeorm';
 import Genre from './Genre';
+import createImagesURL from '../../utils/createImagesURL';
 
-@Entity()
+@typeorm.Entity()
 class Book {
-  @PrimaryGeneratedColumn()
+  @typeorm.PrimaryGeneratedColumn()
   bookId: number;
 
-  @Column('text')
+  @typeorm.Column({
+    type: 'varchar',
+    nullable: false,
+    default: 'anonimous',
+  })
   title: string;
 
-  @Column('text')
+  @typeorm.Column({
+    type: 'varchar',
+    nullable: false,
+  })
   author: string;
 
-  @Column({
-    nullable: true,
+  @typeorm.Column({
+    type: 'int',
+    nullable: false,
   })
   price: number;
 
-  @Column({
+  @typeorm.Column({
+    type: 'varchar',
     nullable: true,
   })
   cover: string;
 
-  @Column()
+  @typeorm.Column()
   dateOfIssue: Date;
 
-  @Column({
+  @typeorm.Column({
+    type: 'int',
     nullable: true,
   })
   quantity: number;
 
-  @ManyToMany(() => Genre)
-  @JoinTable()
+  @typeorm.AfterLoad()
+  createImagesURL() {
+    this.cover = createImagesURL('book', this.cover);
+  }
+
+  @typeorm.ManyToMany(() => Genre, (genre) => genre.genreId)
+  @typeorm.JoinTable()
   genres: Genre[];
 }
 

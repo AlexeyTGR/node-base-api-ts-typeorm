@@ -27,6 +27,7 @@ class User {
   @Column({
     type: 'text',
     unique: true,
+    nullable: false,
   })
   email: string;
 
