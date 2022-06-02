@@ -20,7 +20,7 @@ module.exports = {
     'no-plusplus': 'off',
     'operator-linebreak': ['error', 'after', { overrides: { '?': 'before', ':': 'before' } }],
     'comma-dangle': ['error', 'always-multiline'],
-    'no-console': ['error', { allow: ['warn', 'error'] }],
+    'no-console': ['error', { allow: ['warn', 'error', 'log'] }],
     'prefer-destructuring': 'off',
     'arrow-parens': ['error', 'always'],
     'arrow-body-style': 'off',

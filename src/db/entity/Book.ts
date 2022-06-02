@@ -17,6 +17,11 @@ class Book {
   })
   price: number;
 
+  @Column({
+    nullable: true,
+  })
+  cover: string;
+
   @Column()
   dateOfIssue: Date;
 
