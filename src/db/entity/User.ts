@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, AfterLoad } from 'typeorm';
+import createImagesURL from '../../utils/createImagesURL';
 import passwordUtils from '../../utils/passwordUtils';
 
 export enum UserRole {
@@ -52,6 +53,11 @@ class User {
   @BeforeInsert()
   async hashPassword() {
     this.password = await passwordUtils.hash(this.password);
+  }
+
+  @AfterLoad()
+  createImagesURL() {
+    this.avatar = createImagesURL(this.avatar, 'user');
   }
 }
 

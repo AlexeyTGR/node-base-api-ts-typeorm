@@ -14,7 +14,7 @@ export const uploadAvatar: Handler = async (req, res, next) => {
     const imgExtention = imgInfo.replace(/(^"data:image\/)|(;base64$)/g, '');
     const avatarName = `${uuidv4()}.${imgExtention}`;
 
-    await fs.promises.writeFile(`public/${avatarName}`, base64Data, 'base64');
+    await fs.promises.writeFile(`public/user/${avatarName}`, base64Data, 'base64');
 
     user.avatar = avatarName;
     await db.user.update(userId, user);
