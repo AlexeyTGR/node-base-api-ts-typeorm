@@ -1,8 +1,9 @@
 import 'reflect-metadata';
-import { DataSource } from 'typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
+import { SeederOptions } from 'typeorm-extension';
 import config from '../config';
 
-const appDataSource = new DataSource({
+const options: DataSourceOptions & SeederOptions = {
   type: config.db.type,
   host: config.db.host,
   port: config.db.port,
@@ -14,7 +15,11 @@ const appDataSource = new DataSource({
   entities: [`${__dirname}/entity/*`],
   migrations: [`${__dirname}/migrations/*`],
   subscribers: [],
-});
+  seeds: [`${__dirname}/seeds/*`],
+  factories: [`${__dirname}/factories/*`],
+};
+
+const appDataSource = new DataSource(options);
 
 export const connect = () => {
   const connection = appDataSource.initialize();

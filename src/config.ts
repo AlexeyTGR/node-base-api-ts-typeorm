@@ -21,6 +21,8 @@ const config = {
     username: parsedEnv.DB_USERNAME,
     password: parsedEnv.DB_PASSWORD,
     database: parsedEnv.DB_NAME,
+    seeds: parsedEnv.DB_SEEDS,
+    factories: parsedEnv.DB_FACTORIES,
   },
   port: parsedEnv.CONNECTION_PORT,
   passwordSecretKey: parsedEnv.SALT,

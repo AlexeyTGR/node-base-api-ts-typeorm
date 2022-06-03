@@ -39,7 +39,7 @@ class Book {
     type: 'int',
     nullable: true,
   })
-  quantity: number;
+  inStock: number;
 
   @typeorm.AfterLoad()
   createImagesURL() {
