@@ -1,9 +1,7 @@
 import { Handler, Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import Genre from '../../db/entity/Genre';
 import constants from '../../utils/constants';
 import db from '../../db';
-import createCustomError from '../../utils/createCustomError';
 
 type ReqQuery = {
   page?: string;
@@ -25,28 +23,29 @@ export const getAllBooks: Handler = async (req: ExtendedRequest, res, next) => {
     const orderDirection = req.query.orderDir || constants.COMMON_ORDER_DIRECTION;
     const priceFrom = +req.query.priceFrom || 0;
     const priceTo = +req.query.priceTo || constants.COMMON_MAX_PRICE;
-    const genres = +req.query.genres;
+    const genres = req.query.genres;
 
     let query = db.book.createQueryBuilder('book');
+    const genre111 = await db.genre.find();
+    console.log('genre111', genre111);
+    
     query = query
       .orderBy(`book.${order}`, orderDirection)
       .andWhere('book.price BETWEEN :from AND :to', { from: priceFrom, to: priceTo });
 
     if (genres) {
-      const allGenres = await db.genre.find();
-      const result = allGenres.filter((genre) => {
-        return genre.genreId === genres;
-      }).map((item) => item.genreId);
+      const genresArray = genres.split(' ').map((genre) => {
+        return +genre;
+      });
 
-      if (result.length === 0) {
-        throw createCustomError(StatusCodes.BAD_REQUEST, 'Bad choice of genre...');
-      }
-      console.log('result >>>>>', result);
       query.leftJoinAndSelect('book.genres', 'genre')
-        .andWhere('genre.genreId = :genreId', { genreId: genres });
+        .andWhere('genre.genreId IN (:...genreIds)', { genreIds: genresArray });
     }
 
     const books = await query.take(limit).skip(skip).getMany();
+    if (books.length === 0) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: 'No books found matching your search' });
+    }
 
     return res.status(StatusCodes.OK).json({ books });
   } catch (err) {

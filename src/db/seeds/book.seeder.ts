@@ -1,5 +1,5 @@
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
-import db from '..';
+import db from '../index';
 import appDataSource from '../data-source';
 import Book from '../entity/Book';
 import Genre from '../entity/Genre';
@@ -12,12 +12,12 @@ class BookSeeder implements Seeder {
   ): Promise<any> {
     await db.book.insert([
       {
-        title: 'LotR 2',
-        author: 'Tolkien',
-        cover: '',
-        price: 100,
-        inStock: 50,
-        dateOfIssue: '1955-10-10',
+        title: 'The Lord of the Ring: The Two Towers',
+        author: 'J.R.R Tolkien',
+        cover: 'LotRTTT.jpeg',
+        price: 50,
+        inStock: 10,
+        dateOfIssue: '1954-11-11',
         genres: [{ genreId: 10 } as Genre],
       },
     ]);
