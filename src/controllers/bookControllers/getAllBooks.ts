@@ -26,15 +26,12 @@ export const getAllBooks: Handler = async (req: ExtendedRequest, res, next) => {
     const genres = req.query.genres;
 
     let query = db.book.createQueryBuilder('book');
-    const genre111 = await db.genre.find();
-    console.log('genre111', genre111);
-    
     query = query
       .orderBy(`book.${order}`, orderDirection)
       .andWhere('book.price BETWEEN :from AND :to', { from: priceFrom, to: priceTo });
 
     if (genres) {
-      const genresArray = genres.split(' ').map((genre) => {
+      const genresArray = genres.split(',').map((genre) => {
         return +genre;
       });
 
@@ -42,12 +39,10 @@ export const getAllBooks: Handler = async (req: ExtendedRequest, res, next) => {
         .andWhere('genre.genreId IN (:...genreIds)', { genreIds: genresArray });
     }
 
-    const books = await query.take(limit).skip(skip).getMany();
-    if (books.length === 0) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: 'No books found matching your search' });
-    }
+    const [books, count] = await query.take(limit).skip(skip).getManyAndCount();
+    const pagesQuantity = new Array(Math.ceil(count / limit));
 
-    return res.status(StatusCodes.OK).json({ books });
+    return res.status(StatusCodes.OK).json({ books, pagesQuantity });
   } catch (err) {
     next(err);
   }
