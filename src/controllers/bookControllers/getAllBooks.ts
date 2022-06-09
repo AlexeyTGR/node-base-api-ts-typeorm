@@ -25,24 +25,19 @@ export const getAllBooks: Handler = async (req: ExtendedRequest, res, next) => {
     const priceTo = +req.query.priceTo || constants.COMMON_MAX_PRICE;
     const genres = req.query.genres;
 
-    let query = db.book.createQueryBuilder('book');
-    query = query
-      .orderBy(`book.${order}`, orderDirection)
-      .andWhere('book.price BETWEEN :from AND :to', { from: priceFrom, to: priceTo });
+    let query = db.book.createQueryBuilder('book').orderBy(`book.${order}`, orderDirection);
+
+    query = query.andWhere('book.price BETWEEN :from AND :to', { from: priceFrom, to: priceTo });
 
     if (genres) {
-      const genresArray = genres.split(',').map((genre) => {
-        return +genre;
-      });
-
-      query.leftJoinAndSelect('book.genres', 'genre')
+      const genresArray = genres.split(',').map((genreId) => +genreId);
+      query.leftJoin('book.genres', 'genre')
         .andWhere('genre.genreId IN (:...genreIds)', { genreIds: genresArray });
     }
 
-    const [books, count] = await query.take(limit).skip(skip).getManyAndCount();
-    const pagesQuantity = new Array(Math.ceil(count / limit));
+    const [data, totalCount] = await query.take(limit).skip(skip).getManyAndCount();
 
-    return res.status(StatusCodes.OK).json({ books, pagesQuantity });
+    return res.status(StatusCodes.OK).json({ books: data, pagesQuantity: totalCount });
   } catch (err) {
     next(err);
   }
