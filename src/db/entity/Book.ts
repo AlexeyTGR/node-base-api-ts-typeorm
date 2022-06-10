@@ -1,6 +1,7 @@
 import * as typeorm from 'typeorm';
 import Genre from './Genre';
 import createImagesURL from '../../utils/createImagesURL';
+import Rating from './Rating';
 
 @typeorm.Entity()
 class Book {

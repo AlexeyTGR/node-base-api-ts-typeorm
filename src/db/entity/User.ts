@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, AfterLoad } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, AfterLoad, OneToMany } from 'typeorm';
 import createImagesURL from '../../utils/createImagesURL';
 import passwordUtils from '../../utils/passwordUtils';
+import Rating from './Rating';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -59,6 +60,9 @@ class User {
   createImagesURL() {
     this.avatar = createImagesURL(this.avatar, 'user');
   }
+
+  @OneToMany(() => Rating, (rating) => rating.user)
+  ratings: Rating[];
 }
 
 export default User;
