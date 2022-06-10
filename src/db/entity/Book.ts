@@ -41,9 +41,15 @@ class Book {
   })
   inStock: number;
 
+  @typeorm.Column({
+    type: 'text',
+    nullable: true,
+  })
+  description: string;
+
   @typeorm.AfterLoad()
   createImagesURL() {
-    this.cover = createImagesURL('book', this.cover);
+    this.cover = createImagesURL(this.cover, 'book');
   }
 
   @typeorm.ManyToMany(() => Genre, (genre) => genre.genreId)

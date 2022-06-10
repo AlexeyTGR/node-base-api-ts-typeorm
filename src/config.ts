@@ -27,6 +27,7 @@ const config = {
   port: parsedEnv.CONNECTION_PORT,
   passwordSecretKey: parsedEnv.SALT,
   tokenSecretKey: parsedEnv.SECRET_KEY,
+  currentURL: parsedEnv.CURRENT_URL,
 };
 
 export default config;

@@ -11,6 +11,7 @@ type ReqQuery = {
   priceTo?: string;
   order?: string;
   orderDir?: 'ASC' | 'DESC';
+  value?: string;
 }
 type ExtendedRequest = Request<unknown, unknown, unknown, ReqQuery>
 
@@ -24,15 +25,21 @@ export const getAllBooks: Handler = async (req: ExtendedRequest, res, next) => {
     const priceFrom = +req.query.priceFrom || 0;
     const priceTo = +req.query.priceTo || constants.COMMON_MAX_PRICE;
     const genres = req.query.genres;
-
+    const searchValue = req.query.value;
     let query = db.book.createQueryBuilder('book').orderBy(`book.${order}`, orderDirection);
 
     query = query.andWhere('book.price BETWEEN :from AND :to', { from: priceFrom, to: priceTo });
 
     if (genres) {
       const genresArray = genres.split(',').map((genreId) => +genreId);
-      query.leftJoin('book.genres', 'genre')
+      query = query.leftJoin('book.genres', 'genre')
         .andWhere('genre.genreId IN (:...genreIds)', { genreIds: genresArray });
+    }
+    if (searchValue) {
+      query = query.andWhere(
+        '(book.title ILIKE :searchString OR book.author ILIKE :searchString OR book.description ILIKE :searchString)',
+        { searchString: `%${searchValue}%` },
+      );
     }
 
     const [data, totalCount] = await query.take(limit).skip(skip).getManyAndCount();

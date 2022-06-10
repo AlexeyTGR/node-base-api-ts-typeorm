@@ -1,6 +1,6 @@
 import config from '../config';
 
-const createImagesURL = (folder: string, fileName: string): string => {
+const createImagesURL = (fileName: string, folder: string): string => {
   return `http://localhost:${config.port}/${folder}/${fileName}`;
 };
 
