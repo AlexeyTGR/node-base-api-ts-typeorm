@@ -2,6 +2,7 @@ import * as typeorm from 'typeorm';
 import Genre from './Genre';
 import createImagesURL from '../../utils/createImagesURL';
 import Rating from './Rating';
+import calcAverageRate from '../../utils/calcAverageRate';
 
 @typeorm.Entity()
 class Book {
@@ -48,6 +49,15 @@ class Book {
   })
   description: string;
 
+  @typeorm.Column({
+    type: 'numeric',
+    precision: 2,
+    scale: 1,
+    default: 0,
+    nullable: true,
+  })
+  averageRate: number;
+
   @typeorm.AfterLoad()
   createImagesURL() {
     this.cover = createImagesURL(this.cover, 'book');
@@ -56,6 +66,9 @@ class Book {
   @typeorm.ManyToMany(() => Genre, (genre) => genre.genreId)
   @typeorm.JoinTable()
   genres: Genre[];
+
+  @typeorm.OneToMany(() => Rating, (rating) => rating.book)
+  ratings: Rating[];
 }
 
 export default Book;

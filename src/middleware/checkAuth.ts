@@ -17,7 +17,14 @@ const checkAuth: Handler = async (req, res, next) => {
     }
 
     const decoded = await tokenUtils.verify(token);
-    const user = await db.user.findOne({ where: { id: decoded.id } });
+    const user = await db.user.findOne({
+      relations: {
+        ratings: {
+          book: true,
+        },
+      },
+      where: { id: decoded.id },
+    });
 
     if (!user) {
       throw createCustomError(StatusCodes.NOT_FOUND, 'User not found');
