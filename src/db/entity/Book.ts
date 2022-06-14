@@ -2,7 +2,7 @@ import * as typeorm from 'typeorm';
 import Genre from './Genre';
 import createImagesURL from '../../utils/createImagesURL';
 import Rating from './Rating';
-import calcAverageRate from '../../utils/calcAverageRate';
+import Comment from './Comment';
 
 @typeorm.Entity()
 class Book {
@@ -69,6 +69,10 @@ class Book {
 
   @typeorm.OneToMany(() => Rating, (rating) => rating.book)
   ratings: Rating[];
+
+  @typeorm.OneToMany(() => Comment, (comment) => comment.book)
+  @typeorm.JoinColumn()
+  comments: Comment[];
 }
 
 export default Book;

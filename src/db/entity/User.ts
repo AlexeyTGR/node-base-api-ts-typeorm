@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, AfterLoad, OneToMany } from 'typeorm';
 import createImagesURL from '../../utils/createImagesURL';
 import passwordUtils from '../../utils/passwordUtils';
+import Comment from './Comment';
 import Rating from './Rating';
 
 export enum UserRole {
@@ -63,6 +64,9 @@ class User {
 
   @OneToMany(() => Rating, (rating) => rating.user)
   ratings: Rating[];
+
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: Comment[];
 }
 
 export default User;
