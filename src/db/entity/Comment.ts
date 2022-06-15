@@ -11,7 +11,7 @@ class Comment {
     type: 'timestamp',
     nullable: false,
   })
-  date: number;
+  date: Date;
 
   @typeorm.Column({
     type: 'text',

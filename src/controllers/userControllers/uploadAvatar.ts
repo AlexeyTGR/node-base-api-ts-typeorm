@@ -17,9 +17,11 @@ export const uploadAvatar: Handler = async (req, res, next) => {
     const avatarName = `${uuidv4()}.${imgExtention}`;
 
     await fs.promises.writeFile(`public/user/${avatarName}`, base64Data, 'base64');
-    const oldAvatarPath = user.avatar.replace(`${config.currentURL}`, 'public');
-    await fs.promises.unlink(`${oldAvatarPath}`);
 
+    if (user.avatar !== `${config.currentURL}/user/null`) {
+      const oldAvatarPath = user.avatar.replace(`${config.currentURL}`, 'public');
+      await fs.promises.unlink(`${oldAvatarPath}`);
+    }
 
     user.avatar = avatarName;
     await db.user.update(userId, user);

@@ -13,49 +13,35 @@ type ReqBody = {
 type ExtendedRequest = Request<unknown, unknown, ReqBody>
 
 export const setRating: Handler = async (req: ExtendedRequest, res, next) => {
-  const updateBookAverageRating = async (id) => {
-    const updatedBook = await db.book.findOne({
-      relations: { ratings: true },
-      where: { bookId: id },
-    });
-    const averageRate = calcAverageRate(updatedBook.ratings);
-    updatedBook.averageRate = averageRate;
-
-    await db.book.update(updatedBook.bookId, { averageRate });
-  };
-
   try {
+    const updateBookAverageRating = async (id) => {
+      const updatedBook = await db.book.findOne({
+        relations: { ratings: true },
+        where: { bookId: id },
+      });
+      const averageRate = calcAverageRate(updatedBook.ratings);
+      updatedBook.averageRate = averageRate;
+
+      await db.book.update(updatedBook.bookId, { averageRate });
+    };
+
     const rate = new Rating();
     const user = await db.user.findOne({
-      where: {
-        id: +req.body.user_id,
-      },
+      where: { id: +req.body.user_id },
     });
     const book = await db.book.findOne({
-      relations: {
-        ratings: true,
-      },
-      where: {
-        bookId: +req.body.book_id,
-      },
+      relations: { ratings: true },
+      where: { bookId: +req.body.book_id },
     });
 
     const currentRatingFromUser = await db.rating.find({
       relations: {
-        book: {
-          ratings: true,
-        },
-        user: {
-          ratings: true,
-        },
+        book: { ratings: true },
+        user: { ratings: true },
       },
       where: {
-        user: {
-          id: user.id,
-        },
-        book: {
-          bookId: book.bookId,
-        },
+        user: { id: user.id },
+        book: { bookId: book.bookId },
       },
     });
     if (currentRatingFromUser.length !== 0) {
