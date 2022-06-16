@@ -34,7 +34,7 @@ export const updateUser: Handler = async (req: ExtendedRequest, res, next) => {
       dataToChange.oldPassword = passwordUtils.hash(req.body.oldPassword);
 
       if (dataToChange.oldPassword !== user.password) {
-        throw createCustomError(StatusCodes.BAD_REQUEST, 'Wrong old password');
+        throw createCustomError(StatusCodes.FORBIDDEN, 'Wrong old password');
       }
 
       dataToChange.password = passwordUtils.hash(req.body.password);

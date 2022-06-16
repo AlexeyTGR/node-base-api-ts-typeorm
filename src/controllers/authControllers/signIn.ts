@@ -22,7 +22,7 @@ export const signIn: Handler = async (req: ExtendedRequest, res, next) => {
       .getOne();
 
     if (!user) {
-      throw createCustomError(StatusCodes.NOT_FOUND, 'User not found');
+      throw createCustomError(StatusCodes.NOT_FOUND, 'User with this email not found');
     }
 
     const isPasswordsMatch = passwordUtils.verify(password, user.password);
