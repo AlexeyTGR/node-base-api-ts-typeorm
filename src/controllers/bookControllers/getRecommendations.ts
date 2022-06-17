@@ -1,7 +1,8 @@
 import { Handler } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import constants from '../../utils/constants';
+
 import db from '../../db';
+import constants from '../../utils/constants';
 import createCustomError from '../../utils/createCustomError';
 
 export const getRecommendations: Handler = async (req, res, next) => {
@@ -14,7 +15,7 @@ export const getRecommendations: Handler = async (req, res, next) => {
       take: 4,
     });
 
-    if (!recommendedBooks) {
+    if (recommendedBooks.length === 0) {
       throw createCustomError(StatusCodes.INTERNAL_SERVER_ERROR, constants.COMMON_ERROR_MESSAGE);
     }
 

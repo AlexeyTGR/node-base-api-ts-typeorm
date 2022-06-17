@@ -1,7 +1,8 @@
 import { Handler, Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import constants from '../../utils/constants';
+
 import db from '../../db';
+import constants from '../../utils/constants';
 
 type ReqQuery = {
   page?: string;

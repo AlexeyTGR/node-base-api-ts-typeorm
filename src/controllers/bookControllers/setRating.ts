@@ -1,7 +1,10 @@
 import { Handler, Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import Rating from '../../db/entity/Rating';
+
 import db from '../../db';
+import constants from '../../utils/constants';
+import createCustomError from '../../utils/createCustomError';
+import Rating from '../../db/entity/Rating';
 import calcAverageRate from '../../utils/calcAverageRate';
 
 type ReqBody = {
@@ -19,10 +22,16 @@ export const setRating: Handler = async (req: ExtendedRequest, res, next) => {
         relations: { ratings: true },
         where: { bookId: id },
       });
+      if (!updatedBook) {
+        throw createCustomError(StatusCodes.NOT_FOUND, 'No such book exists');
+      }
       const averageRate = calcAverageRate(updatedBook.ratings);
       updatedBook.averageRate = averageRate;
 
-      await db.book.update(updatedBook.bookId, { averageRate });
+      const updateAverageRate = await db.book.update(updatedBook.bookId, { averageRate });
+      if (!updateAverageRate) {
+        throw createCustomError(StatusCodes.INTERNAL_SERVER_ERROR, constants.COMMON_ERROR_MESSAGE);
+      }
     };
 
     const rate = new Rating();

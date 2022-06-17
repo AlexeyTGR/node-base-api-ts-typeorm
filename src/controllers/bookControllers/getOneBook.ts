@@ -1,7 +1,8 @@
 import { Handler } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import createCustomError from '../../utils/createCustomError';
+
 import db from '../../db';
+import createCustomError from '../../utils/createCustomError';
 
 export const getOneBook: Handler = async (req, res, next) => {
   try {
@@ -15,6 +16,7 @@ export const getOneBook: Handler = async (req, res, next) => {
       },
       where: { bookId },
     });
+
     if (!book) {
       throw createCustomError(StatusCodes.NOT_FOUND, 'Book not found');
     }

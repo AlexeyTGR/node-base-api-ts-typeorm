@@ -1,7 +1,9 @@
 import { Handler, Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import createCustomError from '../../utils/createCustomError';
+
 import db from '../../db';
+import constants from '../../utils/constants';
+import createCustomError from '../../utils/createCustomError';
 import Comment from '../../db/entity/Comment';
 
 type ReqBody = {
@@ -37,6 +39,9 @@ export const addComment: Handler = async (req: ExtendedRequest, res, next) => {
     comment.date = new Date();
 
     const newComment = await db.comment.save(comment);
+    if (!newComment) {
+      throw createCustomError(StatusCodes.INTERNAL_SERVER_ERROR, constants.COMMON_ERROR_MESSAGE);
+    }
 
     return res.status(StatusCodes.OK).json({ newComment });
   } catch (err) {
