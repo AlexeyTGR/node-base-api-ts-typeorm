@@ -5,9 +5,9 @@ import db from '../../db';
 import calcAverageRate from '../../utils/calcAverageRate';
 
 type ReqBody = {
-  book_id: string;
-  rating: string;
-  user_id: string;
+  book_id: number;
+  rating: number;
+  user_id: number;
 }
 
 type ExtendedRequest = Request<unknown, unknown, ReqBody>
@@ -27,11 +27,11 @@ export const setRating: Handler = async (req: ExtendedRequest, res, next) => {
 
     const rate = new Rating();
     const user = await db.user.findOne({
-      where: { id: +req.body.user_id },
+      where: { id: req.body.user_id },
     });
     const book = await db.book.findOne({
       relations: { ratings: true },
-      where: { bookId: +req.body.book_id },
+      where: { bookId: req.body.book_id },
     });
 
     const currentRatingFromUser = await db.rating.find({
@@ -45,14 +45,14 @@ export const setRating: Handler = async (req: ExtendedRequest, res, next) => {
       },
     });
     if (currentRatingFromUser.length !== 0) {
-      rate.rating = +req.body.rating;
+      rate.rating = req.body.rating;
       await db.rating.update(currentRatingFromUser[0].rating_id, rate);
       await updateBookAverageRating(book.bookId);
 
       return res.sendStatus(StatusCodes.OK);
     }
 
-    rate.rating = +req.body.rating;
+    rate.rating = req.body.rating;
     rate.user = user;
     rate.book = book;
 

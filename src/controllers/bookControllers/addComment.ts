@@ -1,11 +1,12 @@
 import { Handler, Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import createCustomError from '../../utils/createCustomError';
 import db from '../../db';
 import Comment from '../../db/entity/Comment';
 
 type ReqBody = {
-  book_id: string,
-  user_id: string,
+  book_id: number,
+  user_id: number,
   text: string,
 }
 
@@ -15,22 +16,29 @@ export const addComment: Handler = async (req: ExtendedRequest, res, next) => {
   try {
     const book = await db.book.findOne({
       relations: { comments: true },
-      where: { bookId: +req.body.book_id },
+      where: { bookId: req.body.book_id },
     });
+    if (!book) {
+      throw createCustomError(StatusCodes.NOT_FOUND, 'No such book exists');
+    }
+
     const user = await db.user.findOne({
       relations: { comments: true },
-      where: { id: +req.body.user_id },
+      where: { id: req.body.user_id },
     });
+    if (!user) {
+      throw createCustomError(StatusCodes.NOT_FOUND, 'No such user exists');
+    }
+
     const comment = new Comment();
     comment.book = book;
     comment.user = user;
     comment.text = req.body.text;
     comment.date = new Date();
 
-    await db.comment.save(comment);
-    comment.comment_id = Math.random();
+    const newComment = await db.comment.save(comment);
 
-    return res.status(StatusCodes.OK).json({ comment });
+    return res.status(StatusCodes.OK).json({ newComment });
   } catch (err) {
     next(err);
   }

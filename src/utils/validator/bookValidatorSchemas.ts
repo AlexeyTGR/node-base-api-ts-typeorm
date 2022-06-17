@@ -24,17 +24,17 @@ const getOneBook = yup.object().shape({
 
 const addComment = yup.object().shape({
   body: yup.object().shape({
-    book_id: yup.string().required(),
-    user_id: yup.string().required(),
+    book_id: yup.number().required(),
+    user_id: yup.number().required(),
     text: yup.string().trim().min(1).required(),
-  }).noUnknown(true, 'Bad request'),
+  }).noUnknown(true, 'Bad comment request'),
 });
 
 const setRating = yup.object().shape({
   body: yup.object().shape({
-    book_id: yup.string().required(),
-    user_id: yup.string().required(),
-    rating: yup.string().matches(isRatingValueRegExp).required(),
+    book_id: yup.number().required(),
+    user_id: yup.number().required(),
+    rating: yup.number().min(1).max(5).required(),
   }).noUnknown(true, 'Bad request'),
 });
 
