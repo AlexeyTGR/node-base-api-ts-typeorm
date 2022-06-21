@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, AfterLoad, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, AfterLoad, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import createImagesURL from '../../utils/createImagesURL';
 import passwordUtils from '../../utils/passwordUtils';
+import Book from './Book';
 import Comment from './Comment';
 import Rating from './Rating';
 
@@ -67,6 +68,9 @@ class User {
 
   @OneToMany(() => Comment, (comment) => comment.user)
   comments: Comment[];
+
+  @ManyToMany(() => Book, (book) => book.users)
+  favorites: Book[];
 }
 
 export default User;

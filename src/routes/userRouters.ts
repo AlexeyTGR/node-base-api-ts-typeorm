@@ -10,6 +10,9 @@ import validator from '../utils/validator/userValidatorSchemas';
 import checkIsAdmin from '../middleware/checkIsAdmin';
 import checkAccessRight from '../middleware/checkAccessRights';
 import getUser from '../controllers/userControllers/getUser';
+import getFavorites from '../controllers/userControllers/getFavorites';
+import addToFavorites from '../controllers/userControllers/addToFavorites';
+import removeFromFavorites from '../controllers/userControllers/removeFromFavorites';
 
 export const userRouter = express.Router();
 
@@ -17,6 +20,9 @@ userRouter.use(checkAuth);
 userRouter.get('/all', createValidatorMiddleware(validator.getAllUsers), checkIsAdmin, getAllUsers);
 userRouter.get('/me', getProfile);
 userRouter.post('/upload-avatar', createValidatorMiddleware(validator.uploadAvatar), uploadAvatar);
+userRouter.get('/getFavorite', getFavorites);
+userRouter.post('/addToFavorites', addToFavorites);
+userRouter.delete('/removeFromFavorites', removeFromFavorites);
 userRouter.get('/:id', createValidatorMiddleware(validator.getUser), checkIsAdmin, getUser);
 userRouter.patch('/:id', createValidatorMiddleware(validator.updateUser), checkAccessRight, updateUser);
 userRouter.delete('/:id', createValidatorMiddleware(validator.deleteUser), checkAccessRight, deleteUser);

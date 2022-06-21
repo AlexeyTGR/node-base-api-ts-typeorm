@@ -19,9 +19,8 @@ const checkAuth: Handler = async (req, res, next) => {
     const decoded = await tokenUtils.verify(token);
     const user = await db.user.findOne({
       relations: {
-        ratings: {
-          book: true,
-        },
+        ratings: { book: true },
+        favorites: true,
       },
       where: { id: decoded.id },
     });

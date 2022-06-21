@@ -7,17 +7,33 @@ import createCustomError from '../../utils/createCustomError';
 
 export const getRecommendations: Handler = async (req, res, next) => {
   try {
-    const recommendedBooks = await db.book.find({
+    const searchParams = {
       relations: {
         ratings: true,
+        users: false,
       },
       skip: 0,
       take: 4,
-    });
+    };
+    if (req.user) {
+      searchParams.relations.users = true;
+    }
+    const books = await db.book.find(searchParams);
 
-    if (recommendedBooks.length === 0) {
+    if (books.length === 0) {
       throw createCustomError(StatusCodes.INTERNAL_SERVER_ERROR, constants.COMMON_ERROR_MESSAGE);
     }
+
+    const recommendedBooks = books.map((book) => {
+      const formattedBook = { ...book };
+      formattedBook.users.forEach((user) => {
+        if (user.id === req.user.id) {
+          formattedBook.isInFavorite = true;
+        }
+      });
+      delete formattedBook.users;
+      return formattedBook;
+    });
 
     return res.status(StatusCodes.OK).json(recommendedBooks);
   } catch (err) {

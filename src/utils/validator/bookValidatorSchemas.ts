@@ -1,7 +1,6 @@
 import * as yup from 'yup';
 
 const isNumberRegExp = /^[0-9]+$/;
-const isRatingValueRegExp = /^[0-5]+$/;
 
 const getAllBooks = yup.object().shape({
   query: yup.object().shape({
@@ -13,6 +12,7 @@ const getAllBooks = yup.object().shape({
     order: yup.string().matches(/(price|title|author|averageRate|dateOfIssue)/),
     orderDir: yup.string().matches(/(ASC|DESC)/),
     value: yup.string(),
+    user: yup.number(),
   }).noUnknown(true, 'wrong query params'),
 });
 

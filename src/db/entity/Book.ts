@@ -3,6 +3,7 @@ import Genre from './Genre';
 import createImagesURL from '../../utils/createImagesURL';
 import Rating from './Rating';
 import Comment from './Comment';
+import User from './User';
 
 @typeorm.Entity()
 class Book {
@@ -58,6 +59,8 @@ class Book {
   })
   averageRate: number;
 
+  isInFavorite: boolean;
+
   @typeorm.AfterLoad()
   createImagesURL() {
     this.cover = createImagesURL(this.cover, 'book');
@@ -73,6 +76,10 @@ class Book {
   @typeorm.OneToMany(() => Comment, (comment) => comment.book)
   @typeorm.JoinColumn()
   comments: Comment[];
+
+  @typeorm.ManyToMany(() => User, (user) => user.favorites)
+  @typeorm.JoinTable()
+  users: User[];
 }
 
 export default Book;

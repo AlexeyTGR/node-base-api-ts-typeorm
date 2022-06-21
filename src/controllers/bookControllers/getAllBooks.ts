@@ -14,6 +14,7 @@ type ReqQuery = {
   orderDir?: 'ASC' | 'DESC';
   value?: string;
 }
+
 type ExtendedRequest = Request<unknown, unknown, unknown, ReqQuery>
 
 export const getAllBooks: Handler = async (req: ExtendedRequest, res, next) => {
@@ -42,10 +43,20 @@ export const getAllBooks: Handler = async (req: ExtendedRequest, res, next) => {
         { searchString: `%${searchValue}%` },
       );
     }
+    if (req.user) {
+      query.leftJoinAndSelect('book.users', 'user', 'user.id = :userId', { userId: +req.user.id });
+    }
 
     const [data, totalCount] = await query.take(limit).skip(skip).getManyAndCount();
 
-    return res.status(StatusCodes.OK).json({ books: data, pagesQuantity: totalCount });
+    const formattedList = data.map((book) => {
+      const formattedBook = { ...book };
+      formattedBook.isInFavorite = book.users ? book.users.length > 0 : false;
+      delete formattedBook.users;
+      return formattedBook;
+    });
+
+    return res.status(StatusCodes.OK).json({ books: formattedList, pagesQuantity: totalCount });
   } catch (err) {
     next(err);
   }
