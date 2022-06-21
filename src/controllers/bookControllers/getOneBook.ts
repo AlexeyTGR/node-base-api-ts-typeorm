@@ -10,9 +10,7 @@ export const getOneBook: Handler = async (req, res, next) => {
     const searchParams = {
       relations: {
         ratings: true,
-        comments: {
-          user: true,
-        },
+        comments: { user: true },
         users: false,
       },
       where: { bookId },
@@ -22,6 +20,9 @@ export const getOneBook: Handler = async (req, res, next) => {
     }
 
     const book = await db.book.findOne(searchParams);
+    if (!book) {
+      throw createCustomError(StatusCodes.NOT_FOUND, 'Book not found');
+    }
 
     if (req.user) {
       const isInUserFavorites = book.users.findIndex((user) => {
@@ -29,10 +30,6 @@ export const getOneBook: Handler = async (req, res, next) => {
       });
       book.isInFavorite = isInUserFavorites > -1;
       delete book.users;
-    }
-
-    if (!book) {
-      throw createCustomError(StatusCodes.NOT_FOUND, 'Book not found');
     }
 
     return res.status(StatusCodes.OK).json({ book });

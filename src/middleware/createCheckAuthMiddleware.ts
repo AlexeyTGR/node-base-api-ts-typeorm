@@ -9,12 +9,12 @@ const createCheckAuthMiddleware = (type: 'private' | 'public'): Handler => {
     try {
       const bearerToken: string = req.headers?.authorization || null;
       if (!bearerToken && type === 'private') {
-        throw createCustomError(StatusCodes.BAD_REQUEST, 'Token is not valid');
+        throw createCustomError(StatusCodes.UNAUTHORIZED, 'Token is not valid');
       }
       if (bearerToken) {
         const [bearer, token] = bearerToken.split(' ');
         if (bearer !== 'Bearer' && type === 'private') {
-          throw createCustomError(StatusCodes.BAD_REQUEST, 'Token is not valid');
+          throw createCustomError(StatusCodes.UNAUTHORIZED, 'Token is not valid');
         }
 
         const decoded = await tokenUtils.verify(token);

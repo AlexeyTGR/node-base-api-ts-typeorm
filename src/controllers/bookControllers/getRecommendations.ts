@@ -15,6 +15,7 @@ export const getRecommendations: Handler = async (req, res, next) => {
       skip: 0,
       take: 4,
     };
+
     if (req.user) {
       searchParams.relations.users = true;
     }
@@ -26,11 +27,13 @@ export const getRecommendations: Handler = async (req, res, next) => {
 
     const recommendedBooks = books.map((book) => {
       const formattedBook = { ...book };
-      formattedBook.users.forEach((user) => {
-        if (user.id === req.user.id) {
-          formattedBook.isInFavorite = true;
-        }
-      });
+      if (formattedBook.users.length > 0) {
+        formattedBook.users.forEach((user) => {
+          if (user.id === req.user.id) {
+            formattedBook.isInFavorite = true;
+          }
+        });
+      }
       delete formattedBook.users;
       return formattedBook;
     });

@@ -12,10 +12,7 @@ type ExtendedRequest = Request<unknown, unknown, ReqBody>
 
 export const addToFavorites: Handler = async (req: ExtendedRequest, res, next) => {
   try {
-    const user = await db.user.findOne({
-      relations: { favorites: true },
-      where: { id: req.user.id },
-    });
+    const user = req.user;
 
     const book = await db.book.findOne({
       where: { bookId: req.body.book_id },

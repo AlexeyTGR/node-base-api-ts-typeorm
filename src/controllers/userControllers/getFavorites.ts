@@ -1,19 +1,12 @@
 import { Handler } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import db from '../../db';
+import Book from 'src/db/entity/Book';
 
 export const getUserFavorites: Handler = async (req, res, next) => {
   try {
-    const user = await db.user.findOne({
-      relations: {
-        favorites: true,
-      },
-      where: {
-        id: +req.user.id,
-      },
-    });
+    const user = req.user;
 
-    const userFavorites = user.favorites.map((book) => {
+    const userFavorites = user.favorites.map((book: Book) => {
       const formattedBook = { ...book };
       formattedBook.isInFavorite = true;
       return formattedBook;
