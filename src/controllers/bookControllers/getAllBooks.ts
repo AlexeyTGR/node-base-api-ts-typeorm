@@ -56,7 +56,7 @@ export const getAllBooks: Handler = async (req: ExtendedRequest, res, next) => {
       return formattedBook;
     });
 
-    return res.status(StatusCodes.OK).json({ books: formattedList, pagesQuantity: totalCount });
+    return res.status(StatusCodes.OK).json({ books: formattedList, totalCount });
   } catch (err) {
     next(err);
   }

@@ -3,7 +3,6 @@ import { StatusCodes } from 'http-status-codes';
 import { ExtendedError } from '../utils/createCustomError';
 import constants from '../utils/constants';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const errorHandler = (err: ExtendedError, req: Request, res: Response, next: NextFunction) => {
   if (err.customErrorData) {
     return res

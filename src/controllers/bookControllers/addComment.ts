@@ -24,13 +24,7 @@ export const addComment: Handler = async (req: ExtendedRequest, res, next) => {
       throw createCustomError(StatusCodes.NOT_FOUND, 'No such book exists');
     }
 
-    const user = await db.user.findOne({
-      relations: { comments: true },
-      where: { id: req.body.user_id },
-    });
-    if (!user) {
-      throw createCustomError(StatusCodes.NOT_FOUND, 'No such user exists');
-    }
+    const user = req.user;
 
     const comment = new Comment();
     comment.book = book;

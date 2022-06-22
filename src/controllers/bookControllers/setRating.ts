@@ -17,7 +17,7 @@ type ExtendedRequest = Request<unknown, unknown, ReqBody>
 
 export const setRating: Handler = async (req: ExtendedRequest, res, next) => {
   try {
-    const updateBookAverageRating = async (id) => {
+    const updateBookAverageRating = async (id: number) => {
       const updatedBook = await db.book.findOne({
         relations: { ratings: true },
         where: { bookId: id },
@@ -35,9 +35,7 @@ export const setRating: Handler = async (req: ExtendedRequest, res, next) => {
     };
 
     const rate = new Rating();
-    const user = await db.user.findOne({
-      where: { id: req.body.user_id },
-    });
+    const user = req.user;
     const book = await db.book.findOne({
       relations: { ratings: true },
       where: { bookId: req.body.book_id },

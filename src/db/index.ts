@@ -4,7 +4,6 @@ import Book from './entity/Book';
 import Genre from './entity/Genre';
 import Rating from './entity/Rating';
 import Comment from './entity/Comment';
-// import Favorite from './entity/Favorite';
 
 export default {
   user: appDataSource.getRepository(User),
@@ -12,5 +11,4 @@ export default {
   genre: appDataSource.getRepository(Genre),
   rating: appDataSource.getRepository(Rating),
   comment: appDataSource.getRepository(Comment),
-  // favorite: appDataSource.getRepository(Favorite),
 };

@@ -48,10 +48,17 @@ export const uploadAvatar = yup.object().shape({
   }),
 });
 
+export const handleFavorites = yup.object().shape({
+  body: yup.object().shape({
+    book_id: yup.number().min(1).required(),
+  }),
+});
+
 export default {
   updateUser,
   getUser,
   deleteUser,
   getAllUsers,
   uploadAvatar,
+  handleFavorites,
 };

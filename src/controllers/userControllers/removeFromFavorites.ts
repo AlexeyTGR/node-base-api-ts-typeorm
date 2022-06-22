@@ -12,10 +12,7 @@ type ExtendedRequest = Request<unknown, unknown, ReqBody>
 
 export const removeFromFavorites: Handler = async (req: ExtendedRequest, res, next) => {
   try {
-    const user = await db.user.findOne({
-      relations: { favorites: true },
-      where: { id: req.user.id },
-    });
+    const user = req.user;
 
     user.favorites = user.favorites.filter((book) => {
       return book.bookId !== +req.body.book_id;

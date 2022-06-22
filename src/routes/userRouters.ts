@@ -1,5 +1,5 @@
 import * as express from 'express';
-import checkAuth from '../middleware/checkAuth';
+import { checkAuth } from '../middleware/checkJWT';
 import uploadAvatar from '../controllers/userControllers/uploadAvatar';
 import getAllUsers from '../controllers/userControllers/getAllUsers';
 import getProfile from '../controllers/userControllers/getProfile';
@@ -21,8 +21,8 @@ userRouter.get('/all', createValidatorMiddleware(validator.getAllUsers), checkIs
 userRouter.get('/me', getProfile);
 userRouter.post('/upload-avatar', createValidatorMiddleware(validator.uploadAvatar), uploadAvatar);
 userRouter.get('/getFavorite', getFavorites);
-userRouter.post('/addToFavorites', addToFavorites);
-userRouter.delete('/removeFromFavorites', removeFromFavorites);
+userRouter.post('/addToFavorites', createValidatorMiddleware(validator.handleFavorites), addToFavorites);
+userRouter.delete('/removeFromFavorites', createValidatorMiddleware(validator.handleFavorites), removeFromFavorites);
 userRouter.get('/:id', createValidatorMiddleware(validator.getUser), checkIsAdmin, getUser);
 userRouter.patch('/:id', createValidatorMiddleware(validator.updateUser), checkAccessRight, updateUser);
 userRouter.delete('/:id', createValidatorMiddleware(validator.deleteUser), checkAccessRight, deleteUser);
