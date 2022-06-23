@@ -15,25 +15,25 @@ type ReqBody = {
 
 type ExtendedRequest = Request<unknown, unknown, ReqBody>
 
+const updateBookAverageRating = async (id: number) => {
+  const updatedBook = await db.book.findOne({
+    relations: { ratings: true },
+    where: { bookId: id },
+  });
+  if (!updatedBook) {
+    throw createCustomError(StatusCodes.NOT_FOUND, 'No such book exists');
+  }
+  const averageRate = calcAverageRate(updatedBook.ratings);
+  updatedBook.averageRate = averageRate;
+
+  const updateAverageRate = await db.book.update(updatedBook.bookId, { averageRate });
+  if (!updateAverageRate) {
+    throw createCustomError(StatusCodes.INTERNAL_SERVER_ERROR, constants.COMMON_ERROR_MESSAGE);
+  }
+};
+
 export const setRating: Handler = async (req: ExtendedRequest, res, next) => {
   try {
-    const updateBookAverageRating = async (id: number) => {
-      const updatedBook = await db.book.findOne({
-        relations: { ratings: true },
-        where: { bookId: id },
-      });
-      if (!updatedBook) {
-        throw createCustomError(StatusCodes.NOT_FOUND, 'No such book exists');
-      }
-      const averageRate = calcAverageRate(updatedBook.ratings);
-      updatedBook.averageRate = averageRate;
-
-      const updateAverageRate = await db.book.update(updatedBook.bookId, { averageRate });
-      if (!updateAverageRate) {
-        throw createCustomError(StatusCodes.INTERNAL_SERVER_ERROR, constants.COMMON_ERROR_MESSAGE);
-      }
-    };
-
     const rate = new Rating();
     const user = req.user;
     const book = await db.book.findOne({
@@ -41,7 +41,7 @@ export const setRating: Handler = async (req: ExtendedRequest, res, next) => {
       where: { bookId: req.body.book_id },
     });
 
-    const currentRatingFromUser = await db.rating.find({
+    const currentRatingFromUser = await db.rating.findOne({
       relations: {
         book: { ratings: true },
         user: { ratings: true },
@@ -51,19 +51,16 @@ export const setRating: Handler = async (req: ExtendedRequest, res, next) => {
         book: { bookId: book.bookId },
       },
     });
-    if (currentRatingFromUser.length !== 0) {
+    if (currentRatingFromUser) {
       rate.rating = req.body.rating;
-      await db.rating.update(currentRatingFromUser[0].rating_id, rate);
-      await updateBookAverageRating(book.bookId);
-
-      return res.sendStatus(StatusCodes.OK);
+      await db.rating.update(currentRatingFromUser.rating_id, rate);
+    } else {
+      rate.rating = req.body.rating;
+      rate.user = user;
+      rate.book = book;
+      await db.rating.save(rate);
     }
 
-    rate.rating = req.body.rating;
-    rate.user = user;
-    rate.book = book;
-
-    await db.rating.save(rate);
     await updateBookAverageRating(book.bookId);
 
     return res.sendStatus(StatusCodes.OK);

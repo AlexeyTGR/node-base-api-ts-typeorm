@@ -7,13 +7,19 @@ import validator from '../utils/validator/bookValidatorSchemas';
 import setRating from '../controllers/bookControllers/setRating';
 import addComment from '../controllers/bookControllers/addComment';
 import getRecommendations from '../controllers/bookControllers/getRecommendations';
-import { checkAuth, readUserFromToken } from '../middleware/checkJWT';
+import { checkAuth, readUserFromToken } from '../middleware/checkAuth';
+import getFavorites from '../controllers/bookControllers/getFavorites';
+import addToFavorites from '../controllers/bookControllers/addToFavorites';
+import removeFromFavorites from '../controllers/bookControllers/removeFromFavorites';
 
 export const bookRouter = express.Router();
 
 bookRouter.get('/all', readUserFromToken, createValidatorMiddleware(validator.getAllBooks), getAllBooks);
 bookRouter.get('/genres', getAllGenres);
 bookRouter.post('/rate', checkAuth, createValidatorMiddleware(validator.setRating), setRating);
-bookRouter.post('/addComment', checkAuth, createValidatorMiddleware(validator.addComment), addComment);
+bookRouter.post('/add-comment', checkAuth, createValidatorMiddleware(validator.addComment), addComment);
 bookRouter.get('/recommendations', readUserFromToken, getRecommendations);
+bookRouter.get('/favorites', readUserFromToken, getFavorites);
+bookRouter.post('/add-favorites', createValidatorMiddleware(validator.handleFavorites), addToFavorites);
+bookRouter.delete('/remove-favorites', createValidatorMiddleware(validator.handleFavorites), removeFromFavorites);
 bookRouter.get('/:id', readUserFromToken, createValidatorMiddleware(validator.getOneBook), getOneBook);

@@ -1,26 +1,21 @@
 import { Handler } from 'express';
 import { StatusCodes } from 'http-status-codes';
-
-import db from '../../db';
 import constants from '../../utils/constants';
 import createCustomError from '../../utils/createCustomError';
 
+import db from '../../db';
+
 export const getRecommendations: Handler = async (req, res, next) => {
   try {
-    const searchParams = {
-      relations: {
-        ratings: true,
-        users: false,
-      },
-      skip: 0,
-      take: 4,
-    };
+    let query = db.book.createQueryBuilder('book')
+      .leftJoinAndSelect('book.ratings', 'rating');
 
     if (req.user) {
-      searchParams.relations.users = true;
+      query = query.leftJoinAndSelect('book.users', 'user', 'user.id = :userId', { userId: +req.user.id })
+        .leftJoinAndSelect('user.favorites', 'favorites');
     }
-    const books = await db.book.find(searchParams);
 
+    const books = await query.take(4).skip(0).getMany();
     if (books.length === 0) {
       throw createCustomError(StatusCodes.INTERNAL_SERVER_ERROR, constants.COMMON_ERROR_MESSAGE);
     }

@@ -2,13 +2,13 @@ import { StatusCodes } from 'http-status-codes';
 import { Handler, Request } from 'express';
 import dayjs from 'dayjs';
 import db from '../../db';
-import constants from '../../utils/constants';
+import constants, { OrderDir } from '../../utils/constants';
 
 type ReqQuery = {
   page?: string;
   take?: string;
   order?: string;
-  orderDirection?: 'ASC' | 'DESC';
+  orderDirection?: OrderDir;
   find?: string;
   dateFrom?: string;
   dateTo?: string;

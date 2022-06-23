@@ -7,10 +7,10 @@ const errorHandler = (err: ExtendedError, req: Request, res: Response, next: Nex
   if (err.customErrorData) {
     return res
       .status(err.customErrorData?.code)
-      .json({ data: { message: err.customErrorData?.text || constants.COMMON_ERROR_MESSAGE } });
+      .json({ data: { message: err.customErrorData?.payload || constants.COMMON_ERROR_MESSAGE } });
   }
 
-  console.error(err);
+  console.error('ERROR >>', err);
 
   res
     .status(StatusCodes.INTERNAL_SERVER_ERROR)

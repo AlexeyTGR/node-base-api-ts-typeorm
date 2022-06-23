@@ -2,7 +2,7 @@ import { Handler, Request } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
 import db from '../../db';
-import constants from '../../utils/constants';
+import constants, { OrderDir } from '../../utils/constants';
 
 type ReqQuery = {
   page?: string;
@@ -11,7 +11,7 @@ type ReqQuery = {
   priceFrom?: string;
   priceTo?: string;
   order?: string;
-  orderDir?: 'ASC' | 'DESC';
+  orderDir?: OrderDir;
   value?: string;
 }
 

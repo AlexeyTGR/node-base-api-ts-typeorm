@@ -1,46 +1,68 @@
 import * as yup from 'yup';
+import { OrderDir } from '../constants';
 
 const isNumberRegExp = /^[0-9]+$/;
 
-const getAllBooks = yup.object().shape({
-  query: yup.object().shape({
+const getAllBooks = {
+  query: {
     page: yup.string().matches(isNumberRegExp, 'Bad page number'),
     limit: yup.string().matches(isNumberRegExp, 'Bad limit number'),
     genres: yup.string(),
     priceFrom: yup.string().matches(isNumberRegExp, 'Wrong price value'),
     priceTo: yup.string().matches(isNumberRegExp, 'Wrong price value'),
-    order: yup.string().matches(/(price|title|author|averageRate|dateOfIssue)/),
-    orderDir: yup.string().matches(/(ASC|DESC)/),
+    order: yup.string().oneOf(['price', 'title', 'author', 'averageRate', 'dateOfIssue']),
+    orderDir: yup.string().oneOf([OrderDir.asc, OrderDir.desc]),
     value: yup.string(),
     user: yup.number(),
-  }).noUnknown(true, 'wrong query params'),
-});
+  },
+};
 
-const getOneBook = yup.object().shape({
-  params: yup.object().shape({
-    id: yup.string().matches(isNumberRegExp, 'Bad URL').min(1),
-  }),
-});
+// const getAllBooks = yup.object().shape({
+//   query: yup.object().shape({
+//     page: yup.string().matches(isNumberRegExp, 'Bad page number'),
+//     limit: yup.string().matches(isNumberRegExp, 'Bad limit number'),
+//     genres: yup.string(),
+//     priceFrom: yup.string().matches(isNumberRegExp, 'Wrong price value'),
+//     priceTo: yup.string().matches(isNumberRegExp, 'Wrong price value'),
+//     order: yup.string().oneOf(['price', 'title', 'author', 'averageRate', 'dateOfIssue']),
+//     orderDir: yup.string().oneOf([OrderDir.asc, OrderDir.desc]),
+//     value: yup.string(),
+//     user: yup.number(),
+//   }).noUnknown(true, 'wrong query params'),
+// });
 
-const addComment = yup.object().shape({
-  body: yup.object().shape({
+const getOneBook = {
+  params: {
+    id: yup.string().matches(isNumberRegExp, 'Bad URL'),
+  },
+};
+
+const addComment = {
+  body: {
     book_id: yup.number().required(),
     user_id: yup.number().required(),
     text: yup.string().trim().min(1).required(),
-  }).noUnknown(true, 'Bad comment request'),
-});
+  },
+};
 
-const setRating = yup.object().shape({
-  body: yup.object().shape({
+const setRating = {
+  body: {
     book_id: yup.number().required(),
     user_id: yup.number().required(),
     rating: yup.number().min(1).max(5).required(),
-  }).noUnknown(true, 'Bad request'),
-});
+  },
+};
+
+export const handleFavorites = {
+  body: {
+    book_id: yup.number().min(1).required(),
+  },
+};
 
 export default {
   getAllBooks,
   getOneBook,
   addComment,
   setRating,
+  handleFavorites,
 };

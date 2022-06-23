@@ -38,9 +38,14 @@ const getUserFromToken = async (authHeader?: string) => {
   return user;
 };
 
-export const checkAuth: Handler = async (req, res, next) => {
+const createAuthMiddleware = (shouldFallWithError: boolean): Handler => async (req, res, next) => {
   try {
-    const user = await getUserFromToken(req.headers?.authorization);
+    const user = await getUserFromToken(req.headers?.authorization).catch((err) => {
+      if (shouldFallWithError) {
+        throw (err);
+      }
+      return null;
+    });
 
     req.user = user;
 
@@ -50,15 +55,8 @@ export const checkAuth: Handler = async (req, res, next) => {
   }
 };
 
-export const readUserFromToken: Handler = async (req, res, next) => {
-  try {
-    const user = await getUserFromToken(req.headers?.authorization).catch(() => null);
-    req.user = user;
+export const checkAuth = createAuthMiddleware(true);
 
-    return next();
-  } catch (err) {
-    next(err);
-  }
-};
+export const readUserFromToken = createAuthMiddleware(false);
 
 export default { checkAuth, readUserFromToken };

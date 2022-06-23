@@ -1,14 +1,14 @@
 import { StatusCodes } from 'http-status-codes';
-import { Handler, Request } from 'express';
+import { RequestHandler } from 'express';
 
 import passwordUtils from '../../utils/passwordUtils';
 import createCustomError from '../../utils/createCustomError';
 import tokenUtils from '../../utils/tokenUtils';
 import db from '../../db';
 
-type ExtendedRequest = Request<unknown, unknown, { email: string; password: string; }>
+type ExtendedRequest = RequestHandler<unknown, unknown, { email: string; password: string; }>
 
-export const signIn: Handler = async (req: ExtendedRequest, res, next) => {
+export const signIn: ExtendedRequest = async (req, res, next) => {
   try {
     const {
       email,
@@ -31,7 +31,7 @@ export const signIn: Handler = async (req: ExtendedRequest, res, next) => {
       throw createCustomError(StatusCodes.FORBIDDEN, 'Wrong password');
     }
 
-    const token = tokenUtils.create(user.id);
+    const token = await tokenUtils.create(user.id);
     delete user.password;
 
     return res.status(StatusCodes.OK).json({ user, token, message: 'You are signed in' });

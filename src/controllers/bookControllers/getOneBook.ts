@@ -1,5 +1,7 @@
 import { Handler } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import { FindOneOptions } from 'typeorm';
+import Book from '../../db/entity/Book';
 
 import db from '../../db';
 import createCustomError from '../../utils/createCustomError';
@@ -7,19 +9,17 @@ import createCustomError from '../../utils/createCustomError';
 export const getOneBook: Handler = async (req, res, next) => {
   try {
     const bookId = +req.params.id;
-    const searchParams = {
+    const searchParams: FindOneOptions<Book> = {
       relations: {
         ratings: true,
         comments: { user: true },
-        users: false,
+        users: Boolean(req.user),
       },
       where: { bookId },
     };
-    if (req.user) {
-      searchParams.relations.users = true;
-    }
 
     const book = await db.book.findOne(searchParams);
+
     if (!book) {
       throw createCustomError(StatusCodes.NOT_FOUND, 'Book not found');
     }

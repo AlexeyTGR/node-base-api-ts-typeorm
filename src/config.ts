@@ -26,8 +26,8 @@ const config = {
   },
   clientURL: parsedEnv.CLIENT_URL,
   port: parsedEnv.CONNECTION_PORT,
-  passwordSecretKey: parsedEnv.SALT,
-  tokenSecretKey: parsedEnv.SECRET_KEY,
+  passwordSecretKey: parsedEnv.PASSWORD_SALT,
+  tokenSecretKey: parsedEnv.TOKEN_SECRET_KEY,
   currentURL: parsedEnv.CURRENT_URL,
 };
 

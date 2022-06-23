@@ -14,17 +14,17 @@ type ExtendedRequest = Request<unknown, unknown, ReqBody>
 
 export const signUp: Handler = async (req: ExtendedRequest, res, next) => {
   try {
-    const isPasswordExist = await db.user.findOne({
+    const existingUser = await db.user.findOne({
       where: { email: req.body.email },
     });
-    if (isPasswordExist) {
+    if (existingUser) {
       throw createCustomError(StatusCodes.FORBIDDEN, 'User with this email already exists');
     }
     const userData = db.user.create(req.body);
     const user = await db.user.save(userData);
 
     delete user.password;
-    const token = tokenUtils.create(user.id);
+    const token = await tokenUtils.create(user.id);
 
     return res.status(StatusCodes.CREATED).json({ message: 'User created!', user, token });
   } catch (err) {

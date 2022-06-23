@@ -19,8 +19,24 @@ const promisifiedVerify = async (token: string, key: string): Promise<TokenPaylo
   });
 };
 
-const createToken = (id: number): string => {
-  return jwt.sign({ id }, config.tokenSecretKey);
+const promisifiedSign = async (id: number, key: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    jwt.sign(
+      { id },
+      key,
+      (err: Error, encoded: string) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(encoded);
+      },
+    );
+  });
+};
+
+const createToken = async (id: number): Promise<string> => {
+  const result = await promisifiedSign(id, config.tokenSecretKey);
+  return result;
 };
 
 const verifyToken = async (token: string): Promise<TokenPayload> => {

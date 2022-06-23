@@ -1,23 +1,22 @@
-import StatusCodes from 'http-status-codes';
-
 import constants from '../utils/constants';
 
 export interface ExtendedError extends Error {
   customErrorData?: {
     code?: number;
-    text?: string;
+    payload?: unknown;
   },
 }
 
-const createCustomError = (code: number, text = constants.COMMON_ERROR_MESSAGE): ExtendedError => {
-  const error: ExtendedError = new Error(text);
+const createCustomError =
+  (code: number, payload = constants.COMMON_ERROR_MESSAGE): ExtendedError => {
+    const error: ExtendedError = new Error(payload);
 
-  error.customErrorData = {
-    text,
-    code: code || StatusCodes.BAD_REQUEST,
+    error.customErrorData = {
+      payload,
+      code,
+    };
+
+    return error;
   };
-
-  return error;
-};
 
 export default createCustomError;

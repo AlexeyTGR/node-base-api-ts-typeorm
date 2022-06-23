@@ -62,6 +62,11 @@ class Book {
   isInFavorite: boolean;
 
   @typeorm.AfterLoad()
+  setinitialIsInFavoritesValue() {
+    this.isInFavorite = false;
+  }
+
+  @typeorm.AfterLoad()
   createImagesURL() {
     this.cover = createImagesURL(this.cover, 'book');
   }
@@ -74,7 +79,6 @@ class Book {
   ratings: Rating[];
 
   @typeorm.OneToMany(() => Comment, (comment) => comment.book)
-  @typeorm.JoinColumn()
   comments: Comment[];
 
   @typeorm.ManyToMany(() => User, (user) => user.favorites)

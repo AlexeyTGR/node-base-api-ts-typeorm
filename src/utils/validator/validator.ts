@@ -1,33 +1,69 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import constants from '../constants';
-import createCustomError from '../createCustomError';
+import * as yup from 'yup';
 
-export const createValidatorMiddleware = (shape) => {
+type ValidationSchemaType =
+  yup.StringSchema |
+  yup.NumberSchema |
+  yup.BooleanSchema |
+  yup.DateSchema
+
+type ShapeItemType = Record<string, ValidationSchemaType>
+
+type ShapeType = {
+  body?: ShapeItemType;
+  query?: ShapeItemType;
+  params?: ShapeItemType;
+}
+
+export const createValidatorMiddleware = (shape: ShapeType) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await shape.validate(req, {
+      const shapeObject = {};
+      for (const key in shape) {
+        if (key) {
+          shapeObject[key] = yup.object().shape(shape[key]).noUnknown(true, 'Bad request');
+        }
+      }
+      // const shapeObject = {
+      //   body: yup.object().shape(shape.body).noUnknown(true, 'Bad request'),
+      //   params: yup.object().shape(shape.params).noUnknown(true, 'Bad request'),
+      //   query: yup.object().shape(shape.query).noUnknown(true, 'Bad request'),
+      // };
+
+      const shapeTemplate = yup.object().shape(shapeObject);
+
+      await shapeTemplate.validate(req, {
         abortEarly: false,
         strict: true,
       });
 
+      // await shape.validate(req, {
+      //   abortEarly: false,
+      //   strict: true,
+      // });
+
       next();
     } catch (err) {
       if (!err.inner) {
-        throw createCustomError(StatusCodes.INTERNAL_SERVER_ERROR, constants.COMMON_ERROR_MESSAGE);
+        return next(err);
       }
 
-      const messages = [];
-      err.inner.forEach((e) => {
-        messages.push({
-          path: e.path.split('.')[0] || e.path,
-          field: e.path.split('.')[1] || 'general',
+      const payload = err.inner.map((e) => {
+        const [
+          path = e.path,
+          field = 'general',
+        ] = e.path.split('.');
+
+        return {
+          path,
+          field,
           name: e.name,
           message: e.message,
-        });
+        };
       });
 
-      res.status(StatusCodes.BAD_REQUEST).json(messages);
+      res.status(StatusCodes.BAD_REQUEST).json(payload);
     }
   };
 };

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, AfterLoad, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, AfterLoad, OneToMany, ManyToMany } from 'typeorm';
 import createImagesURL from '../../utils/createImagesURL';
 import passwordUtils from '../../utils/passwordUtils';
 import Book from './Book';
@@ -54,8 +54,8 @@ class User {
   avatar: string;
 
   @BeforeInsert()
-  async hashPassword() {
-    this.password = await passwordUtils.hash(this.password);
+  hashPassword() {
+    this.password = passwordUtils.hash(this.password);
   }
 
   @AfterLoad()
