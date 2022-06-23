@@ -6,13 +6,14 @@ import { userRouter } from './routes/userRouters';
 import { authRouter } from './routes/authRouters';
 import { bookRouter } from './routes/bookRouters';
 import errorHandler from './middleware/errorHandler';
+import config from './config';
 
 import type from './type'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 const app = express();
 
 app.use(express.json({ limit: '10mb' }));
-app.use(cors({ origin: ['http://localhost:3000'] }));
+app.use(cors({ origin: [`${config.clientURL}`] }));
 app.use(express.static('public'));
 
 app.use('/user', userRouter);

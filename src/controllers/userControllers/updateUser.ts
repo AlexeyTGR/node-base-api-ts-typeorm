@@ -5,6 +5,7 @@ import { UserRole } from 'src/db/entity/User';
 import createCustomError from '../../utils/createCustomError';
 import passwordUtils from '../../utils/passwordUtils';
 import db from '../../db';
+import constants from '../../utils/constants';
 
 type BodyType = {
   role?: (() => string) | QueryDeepPartialEntity<UserRole>;
@@ -47,6 +48,9 @@ export const updateUser: Handler = async (req: ExtendedRequest, res, next) => {
     await db.user.update(userId, dataToChange);
 
     const updatedUser = await db.user.findOneBy({ id: userId });
+    if (!updatedUser) {
+      throw createCustomError(StatusCodes.INTERNAL_SERVER_ERROR, constants.COMMON_ERROR_MESSAGE);
+    }
 
     return res.status(StatusCodes.OK).json({ message: 'Done!', user: updatedUser });
   } catch (err) {

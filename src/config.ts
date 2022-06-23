@@ -24,6 +24,7 @@ const config = {
     seeds: parsedEnv.DB_SEEDS,
     factories: parsedEnv.DB_FACTORIES,
   },
+  clientURL: parsedEnv.CLIENT_URL,
   port: parsedEnv.CONNECTION_PORT,
   passwordSecretKey: parsedEnv.SALT,
   tokenSecretKey: parsedEnv.SECRET_KEY,
