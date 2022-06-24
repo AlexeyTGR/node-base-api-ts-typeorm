@@ -12,7 +12,7 @@ const errorHandler = (err: ExtendedError, req: Request, res: Response, next: Nex
 
   console.error('ERROR >>', err);
 
-  res
+  return res
     .status(StatusCodes.INTERNAL_SERVER_ERROR)
     .json({ data: { message: constants.COMMON_ERROR_MESSAGE } });
 };

@@ -9,11 +9,11 @@ class BookSeeder implements Seeder {
   public async run(
     appDataSource,
     factoryManager: SeederFactoryManager,
-  ): Promise<any> {
+  ): Promise<void> {
     await db.book.insert([
       {
-        title: 'The Lord of the Ring: The Two Towers',
-        author: 'J.R.R Tolkien',
+        title: '007',
+        author: 'J. Bond',
         cover: 'LotRTTT.jpeg',
         price: 50,
         inStock: 10,
@@ -21,8 +21,8 @@ class BookSeeder implements Seeder {
         genres: [{ genreId: 10 } as Genre],
       },
     ]);
-    // const bookFactory = await factoryManager.get(Book);
-    // await bookFactory.save();
+    const bookFactory = factoryManager.get(Book);
+    await bookFactory.save();
   }
 }
 

@@ -23,7 +23,6 @@ const appDataSource = new DataSource(options);
 
 export const connect = () => {
   const connection = appDataSource.initialize();
-
   return connection;
 };
 

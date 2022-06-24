@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, AfterLoad, OneToMany, ManyToMany } from 'typeorm';
+import * as typeorm from 'typeorm';
 import createImagesURL from '../../utils/createImagesURL';
 import passwordUtils from '../../utils/passwordUtils';
 import Book from './Book';
@@ -10,66 +10,64 @@ export enum UserRole {
   USER = 'user',
 }
 
-@Entity()
+@typeorm.Entity()
 class User {
-  @PrimaryGeneratedColumn()
+  @typeorm.PrimaryGeneratedColumn()
   id: number;
 
-  @Column({
+  @typeorm.Column({
     type: 'enum',
     enum: UserRole,
     default: UserRole.USER,
   })
   role: UserRole;
 
-  @Column({
-    type: 'text',
+  @typeorm.Column({
+    type: 'varchar',
+    length: 255,
     nullable: true,
   })
   name: string;
 
-  @Column({
-    type: 'text',
+  @typeorm.Column({
+    type: 'varchar',
+    length: 255,
     unique: true,
     nullable: false,
   })
   email: string;
 
-  @Column({
-    type: 'text',
+  @typeorm.Column({
+    type: 'varchar',
+    length: 255,
     select: false,
   })
   password: string;
 
-  @Column({
-    type: 'date',
-    nullable: true,
-  })
-  dob: Date;
-
-  @Column({
-    type: 'text',
+  @typeorm.Column({
+    type: 'varchar',
+    length: 255,
     nullable: true,
   })
   avatar: string;
 
-  @BeforeInsert()
+  @typeorm.BeforeInsert()
   hashPassword() {
     this.password = passwordUtils.hash(this.password);
   }
 
-  @AfterLoad()
+  @typeorm.AfterLoad()
   createImagesURL() {
     this.avatar = createImagesURL(this.avatar, 'user');
   }
 
-  @OneToMany(() => Rating, (rating) => rating.user)
+  @typeorm.OneToMany(() => Rating, (rating) => rating.user)
   ratings: Rating[];
 
-  @OneToMany(() => Comment, (comment) => comment.user)
+  @typeorm.OneToMany(() => Comment, (comment) => comment.user)
   comments: Comment[];
 
-  @ManyToMany(() => Book, (book) => book.users)
+  @typeorm.ManyToMany(() => Book, (book) => book.users)
   favorites: Book[];
 }
 
