@@ -1,9 +1,8 @@
 import 'reflect-metadata';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { SeederOptions } from 'typeorm-extension';
 import config from '../config';
 
-const options: DataSourceOptions & SeederOptions = {
+const options: DataSourceOptions = {
   type: config.db.type,
   host: config.db.host,
   port: config.db.port,
@@ -15,14 +14,20 @@ const options: DataSourceOptions & SeederOptions = {
   entities: [`${__dirname}/entity/*`],
   migrations: [`${__dirname}/migrations/*`],
   subscribers: [],
-  seeds: [`${__dirname}/seeds/*`],
-  factories: [`${__dirname}/factories/*`],
 };
 
 const appDataSource = new DataSource(options);
 
-export const connect = () => {
-  const connection = appDataSource.initialize();
+export const connect = async () => {
+  const connection = await appDataSource.initialize();
+
+  process.on('SIGINT', async () => {
+    await connection.destroy();
+    console.log('DB connecction destroyed \'cause of process termination');
+
+    process.exit(0);
+  });
+
   return connection;
 };
 

@@ -14,6 +14,6 @@ import config from './config';
   }
 })();
 
-process.on('exit', (code) => {
-  console.log('Process exit event with code: ', code);
+process.on('unhandledRejection', (code) => {
+  console.log('Process exit event due uncaught exception: ', code);
 });
