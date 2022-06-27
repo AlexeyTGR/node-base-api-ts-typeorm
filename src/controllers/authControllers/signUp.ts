@@ -24,9 +24,9 @@ export const signUp: Handler = async (req: ExtendedRequest, res, next) => {
     const user = await db.user.save(userData);
 
     delete user.password;
-    const token = await tokenUtils.create(user.id);
+    const [token, refreshToken] = await tokenUtils.createPair(user.id);
 
-    return res.status(StatusCodes.CREATED).json({ message: 'User created!', user, token });
+    return res.status(StatusCodes.CREATED).json({ message: 'User created!', user, token, refreshToken });
   } catch (err) {
     next(err);
   }

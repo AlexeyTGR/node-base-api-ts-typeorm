@@ -31,10 +31,10 @@ export const signIn: ExtendedRequest = async (req, res, next) => {
       throw createCustomError(StatusCodes.FORBIDDEN, 'Wrong password');
     }
 
-    const token = await tokenUtils.create(user.id);
+    const [token, refreshToken] = await tokenUtils.createPair(user.id);
     delete user.password;
 
-    return res.status(StatusCodes.OK).json({ user, token, message: 'You are signed in' });
+    return res.status(StatusCodes.OK).json({ user, token, refreshToken, message: 'You are signed in' });
   } catch (err) {
     next(err);
   }

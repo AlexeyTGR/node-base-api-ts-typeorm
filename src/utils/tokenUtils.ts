@@ -19,11 +19,25 @@ const promisifiedVerify = async (token: string, key: string): Promise<TokenPaylo
   });
 };
 
-const promisifiedSign = async (id: number, key: string): Promise<string> => {
+const promisifiedSign = async (type: 'access' | 'refresh', id: number, key: string): Promise<string> => {
+  let expiresIn: string;
+  switch (type) {
+  case 'access':
+    expiresIn = '5s';
+    break;
+  case 'refresh':
+    expiresIn = '1h';
+    break;
+  default:
+    break;
+  }
   return new Promise((resolve, reject) => {
     jwt.sign(
       { id },
       key,
+      {
+        expiresIn,
+      },
       (err: Error, encoded: string) => {
         if (err) {
           return reject(err);
@@ -35,17 +49,38 @@ const promisifiedSign = async (id: number, key: string): Promise<string> => {
 };
 
 const createToken = async (id: number): Promise<string> => {
-  const result = await promisifiedSign(id, config.tokenSecretKey);
+  const result = await promisifiedSign('access', id, config.accessTokenSecretKey);
+  return result;
+};
+
+const createRefreshToken = async (id: number): Promise<string> => {
+  const result = await promisifiedSign('refresh', id, config.refreshTokenSecretKey);
   return result;
 };
 
 const verifyToken = async (token: string): Promise<TokenPayload> => {
-  const result = await promisifiedVerify(token, config.tokenSecretKey);
+  const result = await promisifiedVerify(token, config.accessTokenSecretKey);
 
   return result;
 };
 
+const verifyRefreshToken = async (token: string): Promise<TokenPayload> => {
+  const result = await promisifiedVerify(token, config.refreshTokenSecretKey);
+
+  return result;
+};
+
+const createPair = async (id: number): Promise<string[]> => {
+  const token = await createToken(id);
+  const refreshToken = await createRefreshToken(id);
+
+  return [token, refreshToken];
+};
+
 export default {
   verify: verifyToken,
+  verifyRefresh: verifyRefreshToken,
   create: createToken,
+  createRefresh: createRefreshToken,
+  createPair,
 };
