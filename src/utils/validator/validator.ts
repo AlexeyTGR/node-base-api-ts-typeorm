@@ -25,11 +25,6 @@ export const createValidatorMiddleware = (shape: ShapeType) => {
           shapeObject[key] = yup.object().shape(shape[key]).noUnknown(true, 'Bad request');
         }
       }
-      // const shapeObject = {
-      //   body: yup.object().shape(shape.body).noUnknown(true, 'Bad request'),
-      //   params: yup.object().shape(shape.params).noUnknown(true, 'Bad request'),
-      //   query: yup.object().shape(shape.query).noUnknown(true, 'Bad request'),
-      // };
 
       const shapeTemplate = yup.object().shape(shapeObject);
 
@@ -37,11 +32,6 @@ export const createValidatorMiddleware = (shape: ShapeType) => {
         abortEarly: false,
         strict: true,
       });
-
-      // await shape.validate(req, {
-      //   abortEarly: false,
-      //   strict: true,
-      // });
 
       next();
     } catch (err) {

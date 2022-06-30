@@ -16,6 +16,7 @@ export const getOneBook: Handler = async (req, res, next) => {
         users: Boolean(req.user),
       },
       where: { bookId },
+      order: { comments: { comment_id: 'ASC' } },
     };
 
     const book = await db.book.findOne(searchParams);

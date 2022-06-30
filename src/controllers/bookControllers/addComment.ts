@@ -32,12 +32,12 @@ export const addComment: Handler = async (req: ExtendedRequest, res, next) => {
     comment.text = req.body.text;
     comment.date = new Date();
 
-    const newComment = await db.comment.save(comment);
-    if (!newComment) {
+    const data = await db.comment.save(comment);
+    if (!data) {
       throw createCustomError(StatusCodes.INTERNAL_SERVER_ERROR, constants.COMMON_ERROR_MESSAGE);
     }
 
-    return res.status(StatusCodes.OK).json({ newComment });
+    return res.status(StatusCodes.OK).json(data);
   } catch (err) {
     next(err);
   }

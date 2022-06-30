@@ -17,20 +17,6 @@ const getAllBooks = {
   },
 };
 
-// const getAllBooks = yup.object().shape({
-//   query: yup.object().shape({
-//     page: yup.string().matches(isNumberRegExp, 'Bad page number'),
-//     limit: yup.string().matches(isNumberRegExp, 'Bad limit number'),
-//     genres: yup.string(),
-//     priceFrom: yup.string().matches(isNumberRegExp, 'Wrong price value'),
-//     priceTo: yup.string().matches(isNumberRegExp, 'Wrong price value'),
-//     order: yup.string().oneOf(['price', 'title', 'author', 'averageRate', 'dateOfIssue']),
-//     orderDir: yup.string().oneOf([OrderDir.asc, OrderDir.desc]),
-//     value: yup.string(),
-//     user: yup.number(),
-//   }).noUnknown(true, 'wrong query params'),
-// });
-
 const getOneBook = {
   params: {
     id: yup.string().matches(isNumberRegExp, 'Bad URL'),
