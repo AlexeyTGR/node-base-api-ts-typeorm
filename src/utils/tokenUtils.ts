@@ -20,17 +20,10 @@ const promisifiedVerify = async (token: string, key: string): Promise<TokenPaylo
 };
 
 const promisifiedSign = async (type: 'access' | 'refresh', id: number, key: string): Promise<string> => {
-  let expiresIn: string;
-  switch (type) {
-  case 'access':
-    expiresIn = '5s';
-    break;
-  case 'refresh':
-    expiresIn = '1h';
-    break;
-  default:
-    break;
-  }
+  const expiresIn = (type === 'access')
+    ? config.accessTokenExpiresTime
+    : config.refreshTokenExpiresTime;
+
   return new Promise((resolve, reject) => {
     jwt.sign(
       { id },

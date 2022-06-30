@@ -22,7 +22,7 @@ export const getRecommendations: Handler = async (req, res, next) => {
 
     const recommendedBooks = books.map((book) => {
       const formattedBook = { ...book };
-      if (formattedBook.users.length > 0) {
+      if (formattedBook.users && formattedBook.users.length > 0) {
         formattedBook.users.forEach((user) => {
           if (user.id === req.user.id) {
             formattedBook.isInFavorite = true;

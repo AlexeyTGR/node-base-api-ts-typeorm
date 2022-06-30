@@ -29,6 +29,8 @@ const config = {
   passwordSecretKey: parsedEnv.PASSWORD_SALT,
   accessTokenSecretKey: parsedEnv.ACCESS_TOKEN_SECRET_KEY,
   refreshTokenSecretKey: parsedEnv.REFRESH_TOKEN_SECRET_KEY,
+  accessTokenExpiresTime: parsedEnv.ACCESS_TOKEN_EXPIRES_TIME,
+  refreshTokenExpiresTime: parsedEnv.REFRESH_TOKEN_EXPIRES_TIME,
   currentURL: parsedEnv.CURRENT_URL,
 };
 
