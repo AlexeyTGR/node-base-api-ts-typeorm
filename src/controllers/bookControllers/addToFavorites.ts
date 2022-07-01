@@ -5,7 +5,7 @@ import createCustomError from '../../utils/createCustomError';
 import db from '../../db';
 
 type ReqBody = {
-  book_id: number,
+  bookId: number,
 }
 
 type ExtendedRequest = Request<unknown, unknown, ReqBody>
@@ -15,7 +15,7 @@ export const addToFavorites: Handler = async (req: ExtendedRequest, res, next) =
     const user = req.user;
 
     const book = await db.book.findOne({
-      where: { bookId: req.body.book_id },
+      where: { bookId: req.body.bookId },
     });
     if (!book) {
       throw createCustomError(StatusCodes.NOT_FOUND, 'Book with this ID not found');

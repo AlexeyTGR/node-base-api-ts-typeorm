@@ -8,9 +8,8 @@ import Rating from '../../db/entity/Rating';
 import calcAverageRate from '../../utils/calcAverageRate';
 
 type ReqBody = {
-  book_id: number;
+  bookId: number;
   rating: number;
-  user_id: number;
 }
 
 type ExtendedRequest = Request<unknown, unknown, ReqBody>
@@ -38,7 +37,7 @@ export const setRating: Handler = async (req: ExtendedRequest, res, next) => {
     const user = req.user;
     const book = await db.book.findOne({
       relations: { ratings: true },
-      where: { bookId: req.body.book_id },
+      where: { bookId: req.body.bookId },
     });
 
     const currentRatingFromUser = await db.rating.findOne({

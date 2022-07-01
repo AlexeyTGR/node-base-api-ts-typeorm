@@ -7,8 +7,7 @@ import createCustomError from '../../utils/createCustomError';
 import Comment from '../../db/entity/Comment';
 
 type ReqBody = {
-  book_id: number,
-  user_id: number,
+  bookId: number,
   text: string,
 }
 
@@ -18,7 +17,7 @@ export const addComment: Handler = async (req: ExtendedRequest, res, next) => {
   try {
     const book = await db.book.findOne({
       relations: { comments: true },
-      where: { bookId: req.body.book_id },
+      where: { bookId: req.body.bookId },
     });
     if (!book) {
       throw createCustomError(StatusCodes.NOT_FOUND, 'No such book exists');

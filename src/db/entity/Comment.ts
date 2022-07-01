@@ -4,8 +4,8 @@ import User from './User';
 
 @typeorm.Entity()
 class Comment {
-  @typeorm.PrimaryGeneratedColumn()
-  comment_id: number;
+  @typeorm.PrimaryGeneratedColumn({ name: 'comment_id' })
+  commentId: number;
 
   @typeorm.Column({
     type: 'timestamp',

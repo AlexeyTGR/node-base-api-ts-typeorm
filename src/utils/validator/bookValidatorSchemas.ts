@@ -25,23 +25,21 @@ const getOneBook = {
 
 const addComment = {
   body: {
-    book_id: yup.number().required(),
-    user_id: yup.number().required(),
+    bookId: yup.number().required(),
     text: yup.string().trim().min(1).required(),
   },
 };
 
 const setRating = {
   body: {
-    book_id: yup.number().required(),
-    user_id: yup.number().required(),
+    bookId: yup.number().required(),
     rating: yup.number().min(1).max(5).required(),
   },
 };
 
 export const handleFavorites = {
   body: {
-    book_id: yup.number().min(1).required(),
+    bookId: yup.number().min(1).required(),
   },
 };
 

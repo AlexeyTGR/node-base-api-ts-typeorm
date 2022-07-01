@@ -3,9 +3,10 @@ import { StatusCodes } from 'http-status-codes';
 import constants from '../../utils/constants';
 import createCustomError from '../../utils/createCustomError';
 import db from '../../db';
+import Book from '../../db/entity/Book';
 
 type ReqBody = {
-  book_id: number,
+  bookId: number,
 }
 
 type ExtendedRequest = Request<unknown, unknown, ReqBody>
@@ -14,8 +15,8 @@ export const removeFromFavorites: Handler = async (req: ExtendedRequest, res, ne
   try {
     const user = req.user;
 
-    user.favorites = user.favorites.filter((book) => {
-      return book.bookId !== +req.body.book_id;
+    user.favorites = user.favorites.filter((book: Book) => {
+      return book.bookId !== +req.body.bookId;
     });
 
     const result = await db.user.save(user);
