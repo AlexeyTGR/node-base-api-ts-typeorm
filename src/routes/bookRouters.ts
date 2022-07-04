@@ -20,6 +20,6 @@ bookRouter.post('/rate', checkAuth, createValidatorMiddleware(validator.setRatin
 bookRouter.post('/add-comment', checkAuth, createValidatorMiddleware(validator.addComment), addComment);
 bookRouter.get('/recommendations', readUserFromToken, getRecommendations);
 bookRouter.get('/favorites', checkAuth, getFavorites);
-bookRouter.post('/add-favorites', createValidatorMiddleware(validator.handleFavorites), addToFavorites);
-bookRouter.delete('/remove-favorites', createValidatorMiddleware(validator.handleFavorites), removeFromFavorites);
+bookRouter.post('/add-favorites', checkAuth, createValidatorMiddleware(validator.handleFavorites), addToFavorites);
+bookRouter.delete('/remove-favorites', checkAuth, createValidatorMiddleware(validator.handleFavorites), removeFromFavorites);
 bookRouter.get('/:id', readUserFromToken, createValidatorMiddleware(validator.getOneBook), getOneBook);
