@@ -52,7 +52,7 @@ export const updateUser: Handler = async (req: ExtendedRequest, res, next) => {
       throw createCustomError(StatusCodes.INTERNAL_SERVER_ERROR, constants.COMMON_ERROR_MESSAGE);
     }
 
-    return res.status(StatusCodes.OK).json({ message: 'Done!', user: updatedUser });
+    return res.status(StatusCodes.OK).json({ user: updatedUser });
   } catch (err) {
     next(err);
   }

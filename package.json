@@ -9,8 +9,7 @@
     "db:migrate:up": "ts-node node_modules/typeorm/cli.js migration:run --dataSource ./src/db/data-source.ts",
     "db:migrate:down": "ts-node node_modules/typeorm/cli.js migration:revert --dataSource ./src/db/data-source.ts",
     "db:seed": "ts-node ./src/db/seeds/index.ts",
-    "type": "module",
-    "lint": "eslint . -c .eslintrc.js --ext .ts --ignore-path .eslintignore",
+     "lint": "eslint . -c .eslintrc.js --ext .ts --ignore-path .eslintignore",
     "lint:fix": "eslint . -c .eslintrc.js --ext .ts --ignore-path .eslintignore --fix"
   },
   "dependencies": {
